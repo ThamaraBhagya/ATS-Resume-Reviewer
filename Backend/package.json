@@ -12,6 +12,11 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "multer": "^2.0.2"
+    "fs": "^0.0.1-security",
+    "mammoth": "^1.10.0",
+    "multer": "^2.0.2",
+    "openai": "^5.12.2",
+    "path": "^0.12.7",
+    "pdf-parse": "^1.1.1"
   }
 }
