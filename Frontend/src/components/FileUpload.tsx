@@ -1,8 +1,7 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { Upload, AlertCircle, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-
+import { Progress } from './ui/progress';
 
 interface FileUploadProps {
   onFileUpload: (file: File) => void;
@@ -10,10 +9,20 @@ interface FileUploadProps {
 
 export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload }) => {
   const [isDragActive, setIsDragActive] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
   const { toast } = useToast();
-  // Add these states and effects to your FileUpload component:
-const [uploadProgress, setUploadProgress] = useState(0);
-const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
+
+  // Clear upload status after success
+  useEffect(() => {
+    if (uploadStatus === 'success') {
+      const timer = setTimeout(() => {
+        setUploadStatus('idle');
+        setUploadProgress(0);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [uploadStatus]);
 
   const validateFile = (file: File): boolean => {
     const allowedTypes = [
@@ -31,7 +40,7 @@ const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success
       return false;
     }
 
-    if (file.size > 10 * 1024 * 1024) { // 10MB limit
+    if (file.size > 10 * 1024 * 1024) {
       toast({
         variant: "destructive",
         title: "File too large",
@@ -43,6 +52,24 @@ const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success
     return true;
   };
 
+  const handleFileUpload = useCallback((file: File) => {
+    setUploadStatus('uploading');
+    // Simulate upload progress
+    const interval = setInterval(() => {
+      setUploadProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setUploadStatus('success');
+          onFileUpload(file);
+          return 100;
+        }
+        return prev + 10;
+      });
+    }, 200);
+
+    return () => clearInterval(interval);
+  }, [onFileUpload]);
+
   const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setIsDragActive(false);
@@ -51,10 +78,10 @@ const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success
     if (files.length > 0) {
       const file = files[0];
       if (validateFile(file)) {
-        onFileUpload(file);
+        handleFileUpload(file);
       }
     }
-  }, [onFileUpload, toast]);
+  }, [handleFileUpload, toast]);
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -67,27 +94,14 @@ const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success
   }, []);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-  const files = Array.from(e.target.files || []);
-  if (files.length > 0) {
-    const file = files[0];
-    if (validateFile(file)) {
-      setUploadStatus('uploading');
-      
-      // Simulate upload progress (replace with actual upload logic)
-      const interval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 100) {
-            clearInterval(interval);
-            setUploadStatus('success');
-            onFileUpload(file);
-            return 100;
-          }
-          return prev + 10;
-        });
-      }, 200);
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      const file = files[0];
+      if (validateFile(file)) {
+        handleFileUpload(file);
+      }
     }
-  }
-  }, [onFileUpload, toast]);
+  }, [handleFileUpload, toast]);
 
   return (
     <div
@@ -110,30 +124,45 @@ const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success
       />
       
       <div className={`transition-all duration-300 ${isDragActive ? 'scale-105' : ''}`}>
-        <Upload className={`mx-auto h-16 w-16 mb-4 transition-colors duration-300 ${
-          isDragActive ? 'text-primary' : 'text-muted-foreground'
-        }`} />
-        
-        <h3 className="text-xl font-semibold mb-2">
-          {isDragActive ? 'Drop your resume here' : 'Upload your resume'}
-        </h3>
-        
-        <p className="text-muted-foreground mb-4">
-          Drag and drop your file here, or click to browse
-        </p>
-        
-        <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
-          <FileText className="h-4 w-4" />
-          <span>PDF or DOCX only</span>
-          <span>•</span>
-          <span>Max 10MB</span>
-        </div>
+        {uploadStatus === 'uploading' ? (
+          <>
+            <Upload className="mx-auto h-16 w-16 mb-4 text-primary animate-pulse" />
+            <Progress value={uploadProgress} className="h-2 mb-4" />
+            <p className="text-muted-foreground">Uploading... {uploadProgress}%</p>
+          </>
+        ) : (
+          <>
+            <Upload className={`mx-auto h-16 w-16 mb-4 transition-colors duration-300 ${
+              isDragActive ? 'text-primary' : 'text-muted-foreground'
+            }`} />
+            <h3 className="text-xl font-semibold mb-2">
+              {isDragActive ? 'Drop your resume here' : 'Upload your resume'}
+            </h3>
+            <p className="text-muted-foreground mb-4">
+              Drag and drop your file here, or click to browse
+            </p>
+            <div className="flex items-center justify-center space-x-2 text-sm text-muted-foreground">
+              <FileText className="h-4 w-4" />
+              <span>PDF or DOCX only</span>
+              <span>•</span>
+              <span>Max 10MB</span>
+            </div>
+          </>
+        )}
       </div>
 
-      {isDragActive && (
+      {isDragActive && !uploadStatus && (
         <div className="absolute inset-0 bg-primary/10 rounded-lg flex items-center justify-center">
           <div className="text-primary text-lg font-semibold">
             Drop to upload
+          </div>
+        </div>
+      )}
+
+      {uploadStatus === 'success' && (
+        <div className="absolute inset-0 bg-success/10 rounded-lg flex items-center justify-center">
+          <div className="text-success text-lg font-semibold">
+            Upload successful!
           </div>
         </div>
       )}

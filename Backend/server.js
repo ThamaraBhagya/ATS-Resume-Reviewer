@@ -88,7 +88,7 @@ app.post('/analyze', upload.single('resume'), async (req, res) => {
     const jobDescription = req.body.jobDescription;
 
     // Craft prompt for AI analysis
-    const prompt = `
+    const analysisPrompt = `
     You are an expert ATS (Applicant Tracking System) resume analyzer. Analyze the following resume against the provided job description and return a comprehensive analysis in the exact JSON format specified below.
 
     RESUME TEXT:
@@ -112,32 +112,7 @@ app.post('/analyze', upload.single('resume'), async (req, res) => {
        - Present: List top 8 skills from resume that match job requirements
        - Missing: List top 5 skills from job description missing from resume
 
-    5. KEYWORD ANALYSIS:
-       - Critical: 5-8 must-have keywords from JD present in resume
-       - Moderate: 5-8 nice-to-have keywords from JD present in resume
-       - Missing: 5-8 important keywords from JD missing from resume
-       - Density: Percentage of keywords matched (0-100)
-
-    6. FORMATTING ANALYSIS:
-       - Score (0-100) based on ATS-friendly formatting
-       - Issues: List 3-5 formatting problems
-       - Positives: List 3-5 formatting strengths
-
-    7. EXPERIENCE ANALYSIS:
-       - Relevance: Percentage (0-100) of experience matching job requirements
-       - Gaps: List 2-3 experience gaps
-       - Strengths: List 2-3 experience strengths
-
-    8. ACHIEVEMENTS ANALYSIS:
-       - Quantified: Count of achievements with metrics/numbers
-       - Total: Total achievements listed
-       - Suggestions: 2-3 ways to improve achievements
-
-    9. COMPETITIVE ANALYSIS:
-       - Ranking: Estimated percentile (e.g., "Top 20%")
-       - Improvements: 3-5 key areas to improve competitiveness
-
-    10. SUGGESTIONS: Provide 5 actionable improvement suggestions
+    
 
     OUTPUT FORMAT (STRICT JSON ONLY - NO ADDITIONAL TEXT):
     {
@@ -149,31 +124,8 @@ app.post('/analyze', upload.single('resume'), async (req, res) => {
         "present": string[],
         "missing": string[]
       },
-      "keywordAnalysis": {
-        "critical": string[],
-        "moderate": string[],
-        "missing": string[],
-        "density": number
-      },
-      "formatting": {
-        "score": number,
-        "issues": string[],
-        "positives": string[]
-      },
-      "experience": {
-        "relevance": number,
-        "gaps": string[],
-        "strengths": string[]
-      },
-      "achievements": {
-        "quantified": number,
-        "total": number,
-        "suggestions": string[]
-      },
-      "competitiveAnalysis": {
-        "ranking": string,
-        "improvements": string[]
-      }
+      "resumeText": string, // Extracted resume text
+       "jobDescriptionText": string // Original job description
     }
 
     IMPORTANT: Return ONLY the JSON object with no additional text, explanations, or markdown formatting.
@@ -192,13 +144,15 @@ app.post('/analyze', upload.single('resume'), async (req, res) => {
         },
         body: JSON.stringify({
           model: 'openai/gpt-3.5-turbo', // or any other supported model
-          messages: [{ role: 'user', content: prompt }],
+          messages: [{ role: 'user', content: analysisPrompt }],
           temperature: 0.7,
           max_tokens: 1500,
           response_format: { type: "json_object" }
         })
       })
     );
+    // Add this new endpoint to your server.js
+
 
     const data = await response.json();
 
@@ -232,6 +186,119 @@ app.post('/analyze', upload.single('resume'), async (req, res) => {
   }
 });
 
+app.post('/analyze-improvements', async (req, res) => {
+  try {
+    // Validate input
+    if (!req.body.resumeText) {
+      return res.status(400).json({ error: 'Resume text is required' });
+    }
+    if (!req.body.jobDescription) {
+      return res.status(400).json({ error: 'Job description is required' });
+    }
+
+    const resumeText = req.body.resumeText;
+    const jobDescription = req.body.jobDescription;
+
+    const improvementsPrompt = `
+        You are an expert ATS (Applicant Tracking System) resume optimizer. Analyze the following resume and job description to provide detailed improvement recommendations in the exact JSON format specified below.
+
+        RESUME TEXT:
+        ${resumeText}
+
+        JOB DESCRIPTION:
+        ${jobDescription}
+
+        ANALYSIS REQUIREMENTS:
+        1. FORMATTING ISSUES:
+          - List 5-7 specific formatting problems affecting ATS parsing
+          - For each, provide: problem description and exact fix recommendation
+
+        2. KEYWORD OPTIMIZATION:
+          - List 3-5 most important missing keywords to add
+          - Suggest specific sections/locations to add them
+          - Provide natural-sounding examples
+
+        3. SKILL PRESENTATION:
+          - Identify 3-5 poorly presented skills that need enhancement
+          - Provide improved phrasing examples for each
+
+        4. EXPERIENCE IMPROVEMENTS:
+          - List 3-5 weak experience bullet points
+          - Provide quantifiable rewrite examples for each
+
+        5. ACTION PLAN:
+          - 3 Immediate fixes (can be done in <1 hour)
+          - 3 Medium-term improvements (2-3 hours work)
+          - 3 Long-term optimizations (requires more effort)
+
+        OUTPUT FORMAT (STRICT JSON ONLY):
+        {
+          "formattingIssues": {
+            "problems": string[],
+            "fixes": string[]
+          },
+          "keywordOptimization": {
+            "missingKeywords": string[],
+            "placementSuggestions": string[],
+            "examples": string[]
+          },
+          "skillPresentation": {
+            "weakSkills": string[],
+            "improvedExamples": string[]
+          },
+          "experienceImprovements": {
+            "weakBullets": string[],
+            "quantifiedExamples": string[]
+          },
+          "actionPlan": {
+            "immediate": string[],
+            "mediumTerm": string[],
+            "longTerm": string[]
+          }
+        }
+
+        Return ONLY the JSON object with no additional text or explanations.
+        `;
+
+    // Call OpenRouter with improvements prompt
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+      },
+      body: JSON.stringify({
+          model: 'openai/gpt-3.5-turbo', // or any other supported model
+          messages: [{ role: 'user', content: improvementsPrompt }],
+          temperature: 0.7,
+          max_tokens: 1500,
+          response_format: { type: "json_object" }
+        })
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.choices || !data.choices[0]?.message?.content) {
+      throw new Error('Unexpected response format from AI service');
+    }
+
+    const responseText = data.choices[0].message.content.trim();
+    const results = JSON.parse(responseText);
+    
+    res.json(results);
+    
+  } catch (error) {
+    console.error('Improvements analysis error:', error);
+    res.status(500).json({ 
+      error: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
+  }
+});
 // Debug route to verify environment variables
 app.get('/check-env', (req, res) => {
   res.json({
