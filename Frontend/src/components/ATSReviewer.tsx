@@ -65,84 +65,65 @@ const ATSReviewer = () => {
     });
   }, [toast]);
 
-  const simulateAnalysis = async () => {
-    setIsAnalyzing(true);
-    setProgress(0);
-    
-    // Simulate progressive analysis
-    const steps = [
-      { progress: 20, message: "Parsing resume..." },
-      { progress: 40, message: "Analyzing keywords..." },
-      { progress: 60, message: "Checking ATS compatibility..." },
-      { progress: 80, message: "Generating suggestions..." },
-      { progress: 100, message: "Analysis complete!" }
-    ];
+  const analyzeResume = async () => {
+  setIsAnalyzing(true);
+  setProgress(0);
+
+  const steps = [
+    { progress: 20, message: "Uploading resume..." },
+    { progress: 40, message: "Analyzing keywords..." },
+    { progress: 60, message: "Checking ATS compatibility..." },
+    { progress: 80, message: "Generating suggestions..." },
+    { progress: 100, message: "Analysis complete!" }
+  ];
+
+  try {
+    const formData = new FormData();
+    formData.append('resume', file!);
+    formData.append('jobDescription', jobDescription);
 
     for (const step of steps) {
       await new Promise(resolve => setTimeout(resolve, 800));
       setProgress(step.progress);
     }
 
-    // Mock results
-    const mockResults: AnalysisResults = {
-      atsScore: 78,
-      keywordMatch: 65,
-      skillCoverage: "Good coverage of technical skills, missing some soft skills mentioned in job description",
-      suggestions: [
-        "Add more keywords from the job description to your skills section",
-        "Include specific software/tools mentioned in the job posting",
-        "Quantify your achievements with numbers and percentages",
-        "Use standard section headers like 'Work Experience' and 'Education'",
-        "Remove graphics and special formatting that may confuse ATS systems",
-        "Improve work experience descriptions with action verbs",
-        "Add industry-specific skills and certifications",
-        "Update contact information format",
-        "Include professional summary section"
-      ],
-      skills: {
-        present: ["JavaScript", "React", "Node.js", "Python", "SQL", "Git", "Agile"],
-        missing: ["AWS", "Docker", "Kubernetes", "TypeScript", "GraphQL"]
-      },
-      atsCompatibility: {
-        score: 75,
-        issues: ["Complex formatting detected", "Missing standard section headers", "Use of text boxes"],
-        recommendations: ["Use simple formatting", "Add clear section headers", "Remove text boxes and graphics"]
-      },
-      keywordAnalysis: {
-        critical: ["JavaScript", "React", "Python", "Agile"],
-        moderate: ["Node.js", "SQL", "Git"],
-        missing: ["AWS", "Docker", "Kubernetes", "TypeScript", "GraphQL"],
-        density: 1.8
-      },
-      formatting: {
-        score: 82,
-        issues: ["Inconsistent bullet points", "Non-standard fonts used"],
-        positives: ["Clear section separation", "Proper spacing", "Professional layout"]
-      },
-      experience: {
-        relevance: 85,
-        gaps: ["No team leadership experience", "Missing recent technology exposure"],
-        strengths: ["Strong technical foundation", "Relevant project experience", "Progressive skill development"]
-      },
-      achievements: {
-        quantified: 4,
-        total: 10,
-        suggestions: ["Add percentage improvements", "Include revenue/cost impact", "Specify team sizes and project scope"]
-      },
-      competitiveAnalysis: {
-        ranking: "Top 30%",
-        improvements: ["Enhance leadership examples", "Add more technical certifications", "Improve keyword density"]
-      }
-    };
+    const response = await fetch('http://localhost:5000/analyze', {
+      method: 'POST',
+      body: formData,
+    });
 
-    setResults(mockResults);
+    if (response.status === 429) {
+      toast({
+        variant: "destructive",
+        title: "Quota Exceeded",
+        description: "API quota exceeded. Please try again later or check your OpenRouter plan.",
+      });
+      setIsAnalyzing(false);
+      return;
+    }
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || 'Failed to analyze resume');
+    }
+
+    const analysisResults: AnalysisResults = await response.json();
+    setResults(analysisResults);
     setIsAnalyzing(false);
-    
+
     toast({
       title: "Analysis Complete!",
       description: "Your resume has been analyzed successfully.",
     });
-  };
+  } catch (error) {
+    setIsAnalyzing(false);
+    toast({
+      variant: "destructive",
+      title: "Analysis Failed",
+      description: error instanceof Error ? error.message : "An error occurred during analysis.",
+    });
+  }
+};
 
   const handleAnalyze = () => {
     if (!file) {
@@ -163,7 +144,7 @@ const ATSReviewer = () => {
       return;
     }
 
-    simulateAnalysis();
+    analyzeResume();
   };
 
   const downloadReport = () => {
