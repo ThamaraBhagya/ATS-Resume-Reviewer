@@ -11,6 +11,8 @@ import { ResultsDashboard } from './ResultsDashboard';
 interface AnalysisResults {
   atsScore: number;
   keywordMatch: number;
+  resumeText: string, // Extracted resume text
+  jobDescriptionText: string; // Original job description
   skillCoverage: string;
   suggestions: string[];
   skills: {
@@ -108,7 +110,11 @@ const ATSReviewer = () => {
     }
 
     const analysisResults: AnalysisResults = await response.json();
-    setResults(analysisResults);
+    setResults({
+  ...analysisResults,
+  resumeText: analysisResults.resumeText,
+  jobDescriptionText: analysisResults.jobDescriptionText
+});
     setIsAnalyzing(false);
 
     toast({

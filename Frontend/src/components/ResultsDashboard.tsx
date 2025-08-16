@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +28,8 @@ import {
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, Pie } from 'recharts';
 
+
+
 interface AnalysisResults {
   atsScore: number;
   keywordMatch: number;
@@ -36,6 +39,8 @@ interface AnalysisResults {
     present: string[];
     missing: string[];
   };
+  resumeText?: string;
+  jobDescriptionText?: string;
   atsCompatibility: {
     score: number;
     issues: string[];
@@ -82,17 +87,60 @@ const COLORS = {
   danger: 'hsl(0, 84%, 60%)'
 };
 
+
 export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({ 
   results, 
   onNewAnalysis, 
   onDownload 
 }) => {
   const navigate = useNavigate();
+   const { toast } = useToast(); 
+  // Add these state variables
+  // 3. Fixed handleShowImprovements function
+  const handleShowImprovements = async () => {
+    try {
+      if (!results.resumeText || !results.jobDescriptionText) {
+        toast({
+          variant: "destructive",
+          title: "Data missing",
+          description: "Resume text or job description not available",
+        });
+        return;
+      }
+
+      const response = await fetch('http://localhost:5000/analyze-improvements', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          resumeText: results.resumeText,
+          jobDescription: results.jobDescriptionText
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch improvements');
+      }
+      
+      const improvements = await response.json();
+      navigate('/ats-improvements', { 
+      state: { improvements },
+      replace: true // Add this to prevent navigation loops
+    });
+      
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Failed to load improvements",
+        description: error instanceof Error ? error.message : "Unknown error occurred",
+      });
+    }
+  };
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-success';
     if (score >= 60) return 'text-warning';
     return 'text-destructive';
   };
+  
 
   const getScoreBadgeVariant = (score: number) => {
     if (score >= 80) return 'default';
@@ -273,7 +321,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
           {/* ATS Improvements Button */}
           <Card 
             className="p-8 shadow-card bg-gradient-card hover:shadow-hover transition-all duration-300 cursor-pointer group"
-            onClick={() => navigate('/ats-improvements', { state: { results } })}
+            onClick={handleShowImprovements }
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
@@ -292,7 +340,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
           {/* Job Alignment Button */}
           <Card 
             className="p-8 shadow-card bg-gradient-card hover:shadow-hover transition-all duration-300 cursor-pointer group"
-            onClick={() => navigate('/job-alignment', { state: { results } })}
+            onClick={handleShowImprovements }
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">
