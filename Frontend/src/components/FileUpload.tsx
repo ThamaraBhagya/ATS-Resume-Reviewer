@@ -2,6 +2,8 @@ import React, { useCallback, useState } from 'react';
 import { Upload, AlertCircle, FileText } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+
+
 interface FileUploadProps {
   onFileUpload: (file: File) => void;
 }
@@ -9,6 +11,9 @@ interface FileUploadProps {
 export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload }) => {
   const [isDragActive, setIsDragActive] = useState(false);
   const { toast } = useToast();
+  // Add these states and effects to your FileUpload component:
+const [uploadProgress, setUploadProgress] = useState(0);
+const [uploadStatus, setUploadStatus] = useState<'idle' | 'uploading' | 'success' | 'error'>('idle');
 
   const validateFile = (file: File): boolean => {
     const allowedTypes = [
@@ -62,13 +67,26 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload }) => {
   }, []);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length > 0) {
-      const file = files[0];
-      if (validateFile(file)) {
-        onFileUpload(file);
-      }
+  const files = Array.from(e.target.files || []);
+  if (files.length > 0) {
+    const file = files[0];
+    if (validateFile(file)) {
+      setUploadStatus('uploading');
+      
+      // Simulate upload progress (replace with actual upload logic)
+      const interval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 100) {
+            clearInterval(interval);
+            setUploadStatus('success');
+            onFileUpload(file);
+            return 100;
+          }
+          return prev + 10;
+        });
+      }, 200);
     }
+  }
   }, [onFileUpload, toast]);
 
   return (

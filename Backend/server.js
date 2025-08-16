@@ -89,30 +89,96 @@ app.post('/analyze', upload.single('resume'), async (req, res) => {
 
     // Craft prompt for AI analysis
     const prompt = `
-    Analyze the following resume text against this job description. Provide a structured JSON output matching this interface:
+    You are an expert ATS (Applicant Tracking System) resume analyzer. Analyze the following resume against the provided job description and return a comprehensive analysis in the exact JSON format specified below.
 
-    interface AnalysisResults {
-      atsScore: number;
-      keywordMatch: number;
-      skillCoverage: string;
-      suggestions: string[];
-      skills: { present: string[]; missing: string[] };
-      atsCompatibility: { score: number; issues: string[]; recommendations: string[] };
-      keywordAnalysis: { critical: string[]; moderate: string[]; missing: string[]; density: number };
-      formatting: { score: number; issues: string[]; positives: string[] };
-      experience: { relevance: number; gaps: string[]; strengths: string[] };
-      achievements: { quantified: number; total: number; suggestions: string[] };
-      competitiveAnalysis: { ranking: string; improvements: string[] };
-    }
-
-    Resume Text:
+    RESUME TEXT:
     ${resumeText}
 
-    Job Description:
+    JOB DESCRIPTION:
     ${jobDescription}
 
-    Output ONLY the JSON object, no additional text.
+    ANALYSIS INSTRUCTIONS:
+    1. ATS SCORE (0-100): Calculate based on:
+       - Format compliance (20% weight)
+       - Keyword matching (30% weight)
+       - Skill alignment (25% weight)
+       - Experience relevance (25% weight)
+
+    2. KEYWORD MATCH (%): Percentage of important job description keywords found in resume
+
+    3. SKILL COVERAGE: Brief summary statement about skill alignment, need little bit explaind paragraph
+
+    4. SKILLS ANALYSIS:
+       - Present: List top 8 skills from resume that match job requirements
+       - Missing: List top 5 skills from job description missing from resume
+
+    5. KEYWORD ANALYSIS:
+       - Critical: 5-8 must-have keywords from JD present in resume
+       - Moderate: 5-8 nice-to-have keywords from JD present in resume
+       - Missing: 5-8 important keywords from JD missing from resume
+       - Density: Percentage of keywords matched (0-100)
+
+    6. FORMATTING ANALYSIS:
+       - Score (0-100) based on ATS-friendly formatting
+       - Issues: List 3-5 formatting problems
+       - Positives: List 3-5 formatting strengths
+
+    7. EXPERIENCE ANALYSIS:
+       - Relevance: Percentage (0-100) of experience matching job requirements
+       - Gaps: List 2-3 experience gaps
+       - Strengths: List 2-3 experience strengths
+
+    8. ACHIEVEMENTS ANALYSIS:
+       - Quantified: Count of achievements with metrics/numbers
+       - Total: Total achievements listed
+       - Suggestions: 2-3 ways to improve achievements
+
+    9. COMPETITIVE ANALYSIS:
+       - Ranking: Estimated percentile (e.g., "Top 20%")
+       - Improvements: 3-5 key areas to improve competitiveness
+
+    10. SUGGESTIONS: Provide 5 actionable improvement suggestions
+
+    OUTPUT FORMAT (STRICT JSON ONLY - NO ADDITIONAL TEXT):
+    {
+      "atsScore": number,
+      "keywordMatch": number,
+      "skillCoverage": string,
+      "suggestions": string[],
+      "skills": {
+        "present": string[],
+        "missing": string[]
+      },
+      "keywordAnalysis": {
+        "critical": string[],
+        "moderate": string[],
+        "missing": string[],
+        "density": number
+      },
+      "formatting": {
+        "score": number,
+        "issues": string[],
+        "positives": string[]
+      },
+      "experience": {
+        "relevance": number,
+        "gaps": string[],
+        "strengths": string[]
+      },
+      "achievements": {
+        "quantified": number,
+        "total": number,
+        "suggestions": string[]
+      },
+      "competitiveAnalysis": {
+        "ranking": string,
+        "improvements": string[]
+      }
+    }
+
+    IMPORTANT: Return ONLY the JSON object with no additional text, explanations, or markdown formatting.
     `;
+
 
     // Call OpenRouter API
     const response = await withRetry(() => 
@@ -128,7 +194,8 @@ app.post('/analyze', upload.single('resume'), async (req, res) => {
           model: 'openai/gpt-3.5-turbo', // or any other supported model
           messages: [{ role: 'user', content: prompt }],
           temperature: 0.7,
-          max_tokens: 1500
+          max_tokens: 1500,
+          response_format: { type: "json_object" }
         })
       })
     );
