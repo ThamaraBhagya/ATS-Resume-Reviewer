@@ -183,34 +183,52 @@ const ATSReviewer = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Hero Section */}
-      <div className="bg-gradient-hero text-white">
-        <div className="container mx-auto px-4 py-20">
-          <div className="text-center max-w-4xl mx-auto animate-fade-in">
-            <h1 className="text-5xl font-bold mb-6">
-              Beat the ATS System
-            </h1>
-            <p className="text-xl mb-8 text-white/90">
-              Get your resume past Applicant Tracking Systems with our professional ATS compatibility checker. 
-              Upload your resume and job description for instant, actionable feedback.
-            </p>
-            <div className="flex justify-center">
-              <Button 
-                size="lg" 
-                variant="secondary"
-                className="bg-white text-primary hover:bg-white/90 text-lg px-8 py-6 shadow-hover transition-all duration-300"
-                onClick={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })}
-              >
-                <Upload className="mr-2 h-5 w-5" />
-                Start Your ATS Check
-              </Button>
+       <nav className="sticky top-0 z-50 bg-gradient-to-r from-blue-500/30 via-indigo-500/20 to-purple-500/10 backdrop-blur-md border-b border-border shadow-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-2">
+              <Shield className="h-8 w-8 text-primary" />
+              <span className="text-2xl font-bold text-foreground">CVBoost</span>
+            </div>
+            <div className="hidden md:flex items-center space-x-6">
+              <a href="#features" className="text-m font-medium text-muted-foreground hover:text-primary transition-colors duration-300 hover:scale-105">Features</a>
+              <a href="#how-it-works" className="text-m font-medium text-muted-foreground hover:text-primary transition-colors duration-300 hover:scale-105">How It Works</a>
+              <a href="#upload-section" className="text-m font-medium text-muted-foreground hover:text-primary transition-colors duration-300 hover:scale-105">Get Started</a>
+              
             </div>
           </div>
         </div>
+      </nav>
+      {/* Hero Section */}
+   {/* Hero Section */}
+<div className="bg-gradient-to-r from-slate-800 via-blue-900 to-black text-white h-screen flex items-center justify-center">
+  <div className="container mx-auto px-4 py-20">
+    <div className="text-center max-w-4xl mx-auto animate-fade-in">
+      <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
+        Beat the ATS System
+      </h1>
+      <p className="text-lg md:text-xl lg:text-2xl mb-8 text-white/90 leading-relaxed">
+        Get your resume past Applicant Tracking Systems with our professional ATS compatibility checker. 
+        Upload your resume and job description for instant, actionable feedback.
+      </p>
+      <div className="flex justify-center">
+        <Button 
+          size="lg" 
+          
+          className="px-8 py-6 text-lg md:text-xl lg:text-2xl rounded-lg bg-transparent text-white border border-white hover:bg-transparent transition transform duration-300 hover:scale-105 hover:shadow-xl"
+          onClick={() => document.getElementById('upload-section')?.scrollIntoView({ behavior: 'smooth' })}
+        >
+          <Upload className="mr-2 h-5 w-5 md:h-6 md:w-6" />
+          Start Your ATS Check
+        </Button>
       </div>
+    </div>
+  </div>
+</div>
+
 
       {/* Features Section */}
-      <section className="py-20 bg-muted/30">
+      <section id="features" className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Why ATS Optimization Matters</h2>
@@ -220,7 +238,7 @@ const ATSReviewer = () => {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <Card className="p-8 shadow-card bg-gradient-card text-center animate-fade-in">
+            <Card className="p-8 shadow-card  border-blue-500 bg-gradient-card text-center animate-fade-in transition transform duration-300 hover:scale-101 hover:shadow-xl">
               <Shield className="mx-auto h-16 w-16 text-primary mb-6" />
               <h3 className="text-2xl font-bold mb-4">ATS-Friendly Format</h3>
               <p className="text-muted-foreground">
@@ -228,7 +246,7 @@ const ATSReviewer = () => {
               </p>
             </Card>
             
-            <Card className="p-8 shadow-card bg-gradient-card text-center animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <Card className="p-8 shadow-card b border-blue-500 bg-gradient-card text-center animate-fade-in transition transform duration-300 hover:scale-101 hover:shadow-xl" style={{ animationDelay: '0.2s' }}>
               <Target className="mx-auto h-16 w-16 text-secondary mb-6" />
               <h3 className="text-2xl font-bold mb-4">Keyword Optimization</h3>
               <p className="text-muted-foreground">
@@ -236,7 +254,7 @@ const ATSReviewer = () => {
               </p>
             </Card>
             
-            <Card className="p-8 shadow-card bg-gradient-card text-center animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <Card className="p-8 shadow-card  border-blue-500 bg-gradient-card text-center animate-fade-in transition transform duration-300 hover:scale-101 hover:shadow-xl" style={{ animationDelay: '0.4s' }}>
               <Zap className="mx-auto h-16 w-16 text-accent mb-6" />
               <h3 className="text-2xl font-bold mb-4">Instant Analysis</h3>
               <p className="text-muted-foreground">
@@ -248,7 +266,7 @@ const ATSReviewer = () => {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-20">
+      <section id="how-it-works" className="py-20 border-t-2 border-black-500">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">How Our ATS Checker Works</h2>
@@ -258,43 +276,58 @@ const ATSReviewer = () => {
           </div>
           
           <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">1</div>
-              <h4 className="text-lg font-semibold mb-3">Upload Resume</h4>
-              <p className="text-muted-foreground text-sm">
-                Upload your resume in PDF or DOCX format for comprehensive analysis.
-              </p>
-            </div>
+            {/* Step 1 */}
+  <Card className="p-6 border-blue-500 shadow-lg rounded-xl text-center hover:scale-105 transition-transform duration-300">
+    <div className="w-16 h-16 bg-gradient-to-r from-purple-600/80 via-indigo-600/80 to-blue-700/80 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+      1
+    </div>
+    <h4 className="text-lg font-semibold mb-3">Upload Resume</h4>
+    <p className="text-muted-foreground text-sm text-justify">
+      Upload your resume in PDF or DOCX format for comprehensive analysis.
+    </p>
+  </Card>
+
+  {/* Step 2 */}
+  <Card className="p-6 border-blue-500 shadow-lg rounded-xl text-center hover:scale-105 transition-transform duration-300">
+    <div className="w-16 h-16 bg-gradient-to-r from-purple-600/80 via-indigo-600/80 to-blue-700/80 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+      2
+    </div>
+    <h4 className="text-lg font-semibold mb-3">Add Job Description</h4>
+    <p className="text-muted-foreground text-sm text-justify">
+      Paste the target job description for tailored keyword matching.
+    </p>
+  </Card>
+
+  {/* Step 3 */}
+  <Card className="p-6 border-blue-500 shadow-lg rounded-xl text-center hover:scale-105 transition-transform duration-300">
+    <div className="w-16 h-16 bg-gradient-to-r from-purple-600/80 via-indigo-600/80 to-blue-700/80 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+      3
+    </div>
+    <h4 className="text-lg font-semibold mb-3">AI Analysis</h4>
+    <p className="text-muted-foreground text-sm text-justify">
+      Our AI scans for ATS compatibility, keywords, and formatting issues.
+    </p>
+  </Card>
+
+  {/* Step 4 */}
+  <Card className="p-6 border-blue-500 shadow-lg rounded-xl text-center hover:scale-105 transition-transform duration-300">
+    <div className="w-16 h-16 bg-gradient-to-r from-purple-600/80 via-indigo-600/80 to-blue-700/80 rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">
+      4
+    </div>
+    <h4 className="text-lg font-semibold mb-3">Get Report</h4>
+    <p className="text-muted-foreground text-sm ">
+      Receive a detailed ATS report with scores, missing skills, and recommendations.
+    </p>
+  </Card>
             
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-secondary rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">2</div>
-              <h4 className="text-lg font-semibold mb-3">Add Job Description</h4>
-              <p className="text-muted-foreground text-sm">
-                Paste the target job description for tailored keyword matching.
-              </p>
-            </div>
+           
             
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-accent rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">3</div>
-              <h4 className="text-lg font-semibold mb-3">AI Analysis</h4>
-              <p className="text-muted-foreground text-sm">
-                Our AI scans for ATS compatibility, keywords, and formatting issues.
-              </p>
-            </div>
-            
-            <div className="text-center">
-              <div className="w-16 h-16 bg-gradient-primary rounded-full flex items-center justify-center text-white font-bold text-xl mx-auto mb-4">4</div>
-              <h4 className="text-lg font-semibold mb-3">Get Results</h4>
-              <p className="text-muted-foreground text-sm">
-                Receive detailed feedback and actionable suggestions for improvement.
-              </p>
-            </div>
           </div>
         </div>
       </section>
 
       {/* Resume Best Practices Section */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-muted/30 border-t-2 border-black-500">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -348,7 +381,7 @@ const ATSReviewer = () => {
               </div>
               
               <div className="lg:pl-8">
-                <Card className="p-8 shadow-card bg-gradient-card">
+                <Card className="p-8 shadow-card bg-gradient-card border-blue-500">
                   <div className="text-center mb-6">
                     <Star className="mx-auto h-12 w-12 text-accent mb-4" />
                     <h3 className="text-2xl font-bold">Ready to Optimize?</h3>
@@ -373,7 +406,7 @@ const ATSReviewer = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-20 bg-gradient-hero text-white">
+      <section className="py-20 bg-gradient-to-r from-slate-800 via-blue-900 to-black text-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold mb-4">Trusted by Job Seekers Worldwide</h2>
@@ -403,10 +436,10 @@ const ATSReviewer = () => {
         </div>
       </section>
 
-      <div className="container mx-auto px-4 py-16">
+      <div id="upload-section" className="container mx-auto px-4 py-16">
         {/* Upload Section */}
-        <div id="upload-section" className="max-w-4xl mx-auto">
-          <Card className="p-8 shadow-card bg-gradient-card animate-slide-up">
+        <div  className="max-w-4xl mx-auto">
+          <Card className="p-8 shadow-card bg-gradient-card animate-slide-up border-blue-500">
             <div className="text-center mb-8">
               <FileText className="mx-auto h-12 w-12 text-primary mb-4" />
               <h2 className="text-3xl font-bold mb-4">Upload Your Resume</h2>
@@ -429,7 +462,7 @@ const ATSReviewer = () => {
           </Card>
 
           {/* Job Description Input */}
-            <Card className="p-8 shadow-card bg-gradient-card mt-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+            <Card className="p-8 shadow-card bg-gradient-card mt-8 animate-slide-up border-blue-500" style={{ animationDelay: '0.2s' }}>
               <div className="text-center mb-6">
                 <BarChart3 className="mx-auto h-12 w-12 text-secondary mb-4" />
                 <h2 className="text-3xl font-bold mb-4">Job Description</h2>
@@ -458,15 +491,7 @@ const ATSReviewer = () => {
                 )}
               </div>
               
-              <div className="mt-4 text-sm text-muted-foreground">
-                <p>Tip: Copy-paste directly from job postings including:</p>
-                <ul className="list-disc pl-5 mt-1 space-y-1">
-                  <li>Bullet points</li>
-                  <li>Numbered lists</li>
-                  <li>Special characters</li>
-                  <li>Full formatting</li>
-                </ul>
-              </div>
+              
             </Card>
 
           {/* Analysis Progress */}
@@ -504,12 +529,12 @@ const ATSReviewer = () => {
       <footer className="bg-muted py-12 mt-16">
         <div className="container mx-auto px-4">
           <div className="text-center">
-            <h3 className="text-lg font-semibold mb-2">ATS Resume Reviewer</h3>
+            <h3 className="text-lg font-semibold mb-2">CVBoost</h3>
             <p className="text-muted-foreground mb-4">
               Professional resume optimization for modern job seekers
             </p>
             <p className="text-sm text-muted-foreground">
-              © 2024 ATS Resume Reviewer. Built with React & TypeScript.
+              © 2025 CVBoost.All right reserved
             </p>
           </div>
         </div>
