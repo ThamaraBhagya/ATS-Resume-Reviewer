@@ -81,14 +81,7 @@ const JobAlignment = () => {
         <div className="container mx-auto px-4 py-12">
           <div className="flex items-center justify-between">
             <div className="animate-fade-in">
-              {/* <Button 
-                variant="outline" 
-                onClick={() => navigate(-1)}
-                className="mb-6 bg-white/10 text-white border-white/20 hover:bg-white/20"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Back to Results
-              </Button> */}
+              
               <div className="flex items-center space-x-4 mb-4">
                 <Target className="h-12 w-12 text-white" />
                 <h1 className="text-4xl font-bold">Job Alignment Strategies</h1>
@@ -97,303 +90,315 @@ const JobAlignment = () => {
                 Specific recommendations to better align your resume with this job opportunity
               </p>
             </div>
-            <Button 
-              size="lg"
-              className="bg-white text-primary hover:bg-white/90 shadow-hover"
-            >
-              <Download className="mr-2 h-5 w-5" />
-              Download Report
-            </Button>
+           
           </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-12 space-y-12">
-        {/* Job Fit Score */}
-        <Card className="p-8 shadow-card">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center space-x-4">
-              <BarChart2 className="h-12 w-12 text-primary" />
-              <div>
-                <h2 className="text-2xl font-bold">Current Job Fit Score</h2>
-                <p className="text-muted-foreground">
-                  How well your resume matches the job requirements (1-10 scale)
-                </p>
-              </div>
-            </div>
-            <div className="text-center">
-              <div className={`text-5xl font-bold ${getScoreColor(alignmentData.jobFit.score)}`}>
-                {alignmentData.jobFit.score}/10
-              </div>
-              <Badge variant={alignmentData.jobFit.score >= 8 ? 'default' : 
-                             alignmentData.jobFit.score >= 5 ? 'secondary' : 'destructive'}>
-                {getScoreBadge(alignmentData.jobFit.score)}
-              </Badge>
-            </div>
-          </div>
-        </Card>
-
-        {/* Key Matches & Gaps */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <Card className="p-8 shadow-card">
-            <div className="flex items-center space-x-3 mb-6">
-              <CheckCircle className="h-6 w-6 text-success" />
-              <h3 className="text-xl font-bold">Strong Matches</h3>
-            </div>
-            <ul className="space-y-4">
-              {alignmentData.jobFit.matches.map((match, index) => (
-                <li key={index} className="flex items-start">
-                  <span className="inline-block bg-success/10 text-success rounded-full p-1 mr-3">
-                    <CheckCircle className="h-4 w-4" />
-                  </span>
-                  {match}
-                </li>
-              ))}
-            </ul>
-          </Card>
-
-          <Card className="p-8 shadow-card">
-            <div className="flex items-center space-x-3 mb-6">
-              <AlertTriangle className="h-6 w-6 text-warning" />
-              <h3 className="text-xl font-bold">Key Gaps</h3>
-            </div>
-            <ul className="space-y-4">
-              {alignmentData.jobFit.gaps.map((gap, index) => (
-                <li key={index} className="flex items-start">
-                  <span className="inline-block bg-warning/10 text-warning rounded-full p-1 mr-3">
-                    <AlertTriangle className="h-4 w-4" />
-                  </span>
-                  {gap}
-                </li>
-              ))}
-            </ul>
-          </Card>
+  {/* Job Fit Score - Modern Card */}
+  <Card className="p-8 bg-gradient-to-r from-blue-50 to-blue-50/50 border border-blue-100 rounded-xl shadow-sm transition transform duration-300 hover:scale-101 hover:shadow-xl">
+    <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+      <div className="flex items-center space-x-4">
+        <div className="p-3 rounded-lg bg-blue-100/50">
+          <BarChart2 className="h-8 w-8 text-blue-600" />
         </div>
-
-        {/* Tailoring Recommendations */}
-        <Card className="p-8 shadow-card">
-          <div className="flex items-center space-x-3 mb-6">
-            <Lightbulb className="h-6 w-6 text-primary" />
-            <h2 className="text-2xl font-bold">Tailoring Recommendations</h2>
-          </div>
-
-          <div className="space-y-8">
-            {/* Rewrites */}
-            <div>
-              <h3 className="text-xl font-semibold mb-4 flex items-center">
-                <FileText className="mr-2 h-5 w-5" />
-                Section Rewrites
-              </h3>
-              <div className="space-y-6">
-                {alignmentData.tailoring.rewrites.map((rewrite, index) => (
-                  <div key={index} className="p-4 bg-muted/50 rounded-lg">
-                    <div className="font-semibold mb-2">{rewrite.section}</div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div>
-                        <div className="text-sm text-muted-foreground mb-1">Current:</div>
-                        <div className="p-3 bg-background rounded border border-destructive/20">
-                          {rewrite.before}
-                        </div>
-                      </div>
-                      <div>
-                        <div className="text-sm text-muted-foreground mb-1">Suggested:</div>
-                        <div className="p-3 bg-background rounded border border-success/20">
-                          {rewrite.after}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Additions */}
-            <div>
-              <h3 className="text-xl font-semibold mb-4 flex items-center">
-                <Zap className="mr-2 h-5 w-5 text-success" />
-                Recommended Additions
-              </h3>
-              <div className="space-y-4">
-                {alignmentData.tailoring.additions.map((addition, index) => (
-                  <div key={index} className="p-4 bg-success/5 rounded-lg border border-success/20">
-                    <div className="font-semibold mb-2">{addition.item}</div>
-                    <div className="text-muted-foreground">Example: {addition.example}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Removals */}
-            <div>
-              <h3 className="text-xl font-semibold mb-4 flex items-center">
-                <AlertTriangle className="mr-2 h-5 w-5 text-destructive" />
-                Suggested Removals
-              </h3>
-              <div className="space-y-4">
-                {alignmentData.tailoring.removals.map((removal, index) => (
-                  <div key={index} className="p-4 bg-destructive/5 rounded-lg border border-destructive/20">
-                    <div className="font-semibold mb-1">{removal.item}</div>
-                    <div className="text-muted-foreground text-sm">Reason: {removal.reason}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Keyword Optimization */}
-        <Card className="p-8 shadow-card">
-          <div className="flex items-center space-x-3 mb-6">
-            <ListChecks className="h-6 w-6 text-secondary" />
-            <h2 className="text-2xl font-bold">Keyword Optimization</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div>
-              <h3 className="font-semibold mb-3 flex items-center">
-                <Search className="mr-2 h-4 w-4" />
-                Missing Keywords
-              </h3>
-              <div className="flex flex-wrap gap-2">
-                {alignmentData.keywords.missing.map((keyword, index) => (
-                  <Badge key={index} variant="outline" className="bg-warning/10 text-warning">
-                    {keyword}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-3 flex items-center">
-                <LayoutTemplate className="mr-2 h-4 w-4" />
-                Placement Suggestions
-              </h3>
-              <div className="space-y-3">
-                {alignmentData.keywords.placement.map((placement, index) => (
-                  <div key={index} className="text-sm">
-                    <span className="font-medium">{placement.keyword}</span> → {placement.section}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="font-semibold mb-3 flex items-center">
-                <FileText className="mr-2 h-4 w-4" />
-                Usage Examples
-              </h3>
-              <div className="space-y-3">
-                {alignmentData.keywords.examples.map((example, index) => (
-                  <div key={index} className="text-sm p-2 bg-muted/50 rounded">
-                    "{example}"
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Achievement Enhancement */}
-        <Card className="p-8 shadow-card">
-          <div className="flex items-center space-x-3 mb-6">
-            <Award className="h-6 w-6 text-primary" />
-            <h2 className="text-2xl font-bold">Achievement Enhancement</h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Current Strong Achievements</h3>
-              <ul className="space-y-4">
-                {alignmentData.achievements.current.map((achievement, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="inline-block bg-success/10 text-success rounded-full p-1 mr-3">
-                      <Star className="h-4 w-4" />
-                    </span>
-                    {achievement}
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Suggested New Achievements</h3>
-              <div className="space-y-4">
-                {alignmentData.achievements.suggested.map((suggestion, index) => (
-                  <div key={index} className="p-4 bg-muted/50 rounded-lg">
-                    <div className="font-semibold mb-1">Suggestion:</div>
-                    <div className="text-muted-foreground mb-3">{suggestion.statement}</div>
-                    <div className="font-semibold mb-1">Example:</div>
-                    <div className="text-success">{suggestion.example}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-8">
-            <h3 className="text-xl font-semibold mb-4">Quantification Tips</h3>
-            <ul className="space-y-3">
-              {alignmentData.achievements.quantificationTips.map((tip, index) => (
-                <li key={index} className="flex items-start">
-                  <span className="inline-block bg-primary/10 text-primary rounded-full p-1 mr-3">
-                    <TrendingUp className="h-4 w-4" />
-                  </span>
-                  {tip}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </Card>
-
-        {/* Strategic Positioning */}
-        <Card className="p-8 shadow-card">
-          <div className="flex items-center space-x-3 mb-6">
-            <Lightbulb className="h-6 w-6 text-secondary" />
-            <h2 className="text-2xl font-bold">Strategic Positioning</h2>
-          </div>
-
-          <div className="space-y-8">
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Summary/Objective Rewrite</h3>
-              <div className="p-4 bg-muted/50 rounded-lg">
-                <div className="whitespace-pre-wrap">{alignmentData.positioning.summary}</div>
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Suggested Section Order</h3>
-              <ol className="list-decimal pl-5 space-y-2">
-                {alignmentData.positioning.reordering.map((section, index) => (
-                  <li key={index} className="font-medium">{section}</li>
-                ))}
-              </ol>
-            </div>
-
-            <div>
-              <h3 className="text-xl font-semibold mb-4">Elements to Emphasize</h3>
-              <div className="flex flex-wrap gap-2">
-                {alignmentData.positioning.emphasis.map((item, index) => (
-                  <Badge key={index} variant="secondary">
-                    {item}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Action Buttons */}
-        <div className="flex justify-center gap-4 pt-8">
-          <Button size="lg" onClick={() => navigate(-1)}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Results
-          </Button>
-          <Button size="lg" variant="secondary">
-            <Download className="mr-2 h-4 w-4" />
-            Download Full Report
-          </Button>
+        <div>
+          <h2 className="text-2xl font-bold text-gray-800">Job Fit Score</h2>
+          <p className="text-gray-600">
+            How well your resume matches the job requirements (1-10 scale)
+          </p>
         </div>
       </div>
+      <div className="text-center">
+        <div className={`text-5xl font-bold ${getScoreColor(alignmentData.jobFit.score)}`}>
+          {alignmentData.jobFit.score}<span className="text-2xl text-gray-500">/10</span>
+        </div>
+        <Badge 
+          variant={alignmentData.jobFit.score >= 8 ? 'default' : 
+                  alignmentData.jobFit.score >= 5 ? 'secondary' : 'destructive'}
+          className="mt-2 text-sm px-3 py-1"
+        >
+          {getScoreBadge(alignmentData.jobFit.score)}
+        </Badge>
+      </div>
+    </div>
+  </Card>
+
+  {/* Key Matches & Gaps - Split Cards */}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 ">
+    {/* Matches Card */}
+    <Card className="p-6 border border-green-100 bg-green-50/30 rounded-xl transition transform duration-300 hover:scale-101 hover:shadow-xl">
+      <div className="flex items-center space-x-3 mb-5">
+        <div className="p-2 rounded-lg bg-green-100">
+          <CheckCircle className="h-5 w-5 text-green-600" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-800">Strong Matches</h3>
+      </div>
+      <ul className="space-y-3">
+        {alignmentData.jobFit.matches.map((match, index) => (
+          <li key={index} className="flex items-start group">
+            <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-100 text-green-600 mr-3 mt-0.5">
+              <CheckCircle className="h-4 w-4" />
+            </span>
+            <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
+              {match}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </Card>
+
+    {/* Gaps Card */}
+    <Card className="p-6 border border-amber-100 bg-amber-50/30 rounded-xl transition transform duration-300 hover:scale-101 hover:shadow-xl">
+      <div className="flex items-center space-x-3 mb-5">
+        <div className="p-2 rounded-lg bg-amber-100">
+          <AlertTriangle className="h-5 w-5 text-amber-600" />
+        </div>
+        <h3 className="text-xl font-bold text-gray-800">Key Gaps</h3>
+      </div>
+      <ul className="space-y-3">
+        {alignmentData.jobFit.gaps.map((gap, index) => (
+          <li key={index} className="flex items-start group">
+            <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-amber-100 text-amber-600 mr-3 mt-0.5">
+              <AlertTriangle className="h-4 w-4" />
+            </span>
+            <span className="text-gray-700 group-hover:text-gray-900 transition-colors">
+              {gap}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  </div>
+
+  {/* Tailoring Recommendations - Modern Accordion Style */}
+  <Card className="p-6 border border-gray-200 rounded-xl shadow-sm transition transform duration-300 hover:scale-101 hover:shadow-xl hover:shadow-indigo-500/35">
+    <div className="flex items-center space-x-3 mb-6">
+      <div className="p-2 rounded-lg bg-blue-100">
+        <Lightbulb className="h-5 w-5 text-blue-600" />
+      </div>
+      <h2 className="text-2xl font-bold text-gray-800">Tailoring Recommendations</h2>
+    </div>
+
+    {/* Rewrites */}
+    <div className="mb-8">
+      <div className="flex items-center mb-4 px-2 py-3 bg-gray-50 rounded-lg">
+        <FileText className="h-5 w-5 text-gray-600 mr-3" />
+        <h3 className="text-lg font-semibold text-gray-800">Section Rewrites</h3>
+      </div>
+      <div className="space-y-4">
+        {alignmentData.tailoring.rewrites.map((rewrite, index) => (
+          <div key={index} className="p-4 border border-gray-200 rounded-lg bg-white">
+            <h4 className="font-medium text-gray-800 mb-3">{rewrite.section}</h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <div className="text-xs font-medium text-gray-500 mb-1">CURRENT</div>
+                <div className="p-3 bg-gray-50 rounded border-l-4 border-gray-300 text-gray-700">
+                  {rewrite.before}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs font-medium text-gray-500 mb-1">SUGGESTED</div>
+                <div className="p-3 bg-blue-50 rounded border-l-4 border-blue-400 text-gray-800">
+                  {rewrite.after}
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Additions */}
+    <div className="mb-8">
+      <div className="flex items-center mb-4 px-2 py-3 bg-gray-50 rounded-lg">
+        <Zap className="h-5 w-5 text-green-600 mr-3" />
+        <h3 className="text-lg font-semibold text-gray-800">Recommended Additions</h3>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {alignmentData.tailoring.additions.map((addition, index) => (
+          <div key={index} className="p-4 border border-green-100 rounded-lg bg-green-50/30">
+            <h4 className="font-medium text-gray-800 mb-2">{addition.item}</h4>
+            <div className="text-sm text-gray-600 bg-white p-2 rounded border border-green-100">
+              <span className="font-medium text-gray-500">Example:</span> {addition.example}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* Removals */}
+    <div>
+      <div className="flex items-center mb-4 px-2 py-3 bg-gray-50 rounded-lg">
+        <AlertTriangle className="h-5 w-5 text-amber-600 mr-3" />
+        <h3 className="text-lg font-semibold text-gray-800">Suggested Removals</h3>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {alignmentData.tailoring.removals.map((removal, index) => (
+          <div key={index} className="p-4 border border-amber-100 rounded-lg bg-amber-50/30">
+            <h4 className="font-medium text-gray-800 mb-1">{removal.item}</h4>
+            <div className="text-sm text-gray-600">
+              <span className="font-medium text-gray-500">Reason:</span> {removal.reason}
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </Card>
+
+  {/* Keyword Optimization - Modern Panel */}
+  <Card className="p-6 border border-gray-200 rounded-xl shadow-sm transition transform duration-300 hover:scale-101 hover:shadow-xl hover:shadow-indigo-500/35">
+    <div className="flex items-center space-x-3 mb-6">
+      <div className="p-2 rounded-lg bg-purple-100">
+        <ListChecks className="h-5 w-5 text-purple-600" />
+      </div>
+      <h2 className="text-2xl font-bold text-gray-800">Keyword Optimization</h2>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {/* Missing Keywords */}
+      <div className="p-4 border border-gray-200 rounded-lg bg-white">
+        <div className="flex items-center mb-3">
+          <Search className="h-5 w-5 text-gray-600 mr-2" />
+          <h3 className="font-semibold text-gray-800">Missing Keywords</h3>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {alignmentData.keywords.missing.map((keyword, index) => (
+            <Badge 
+              key={index} 
+              variant="outline" 
+              className="bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100"
+            >
+              {keyword}
+            </Badge>
+          ))}
+        </div>
+      </div>
+
+      {/* Placement Suggestions */}
+      <div className="p-4 border border-gray-200 rounded-lg bg-white">
+        <div className="flex items-center mb-3">
+          <LayoutTemplate className="h-5 w-5 text-gray-600 mr-2" />
+          <h3 className="font-semibold text-gray-800">Placement Suggestions</h3>
+        </div>
+        <div className="space-y-2">
+          {alignmentData.keywords.placement.map((placement, index) => (
+            <div key={index} className="text-sm flex items-start">
+              <span className="font-medium bg-blue-50 text-blue-600 px-2 py-1 rounded mr-2">
+                {placement.keyword}
+              </span>
+              <span className="text-gray-700 mt-1">→ {placement.section}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Usage Examples */}
+      <div className="p-4 border border-gray-200 rounded-lg bg-white">
+        <div className="flex items-center mb-3">
+          <FileText className="h-5 w-5 text-gray-600 mr-2" />
+          <h3 className="font-semibold text-gray-800">Usage Examples</h3>
+        </div>
+        <div className="space-y-2">
+          {alignmentData.keywords.examples.map((example, index) => (
+            <div 
+              key={index} 
+              className="text-sm p-3 bg-gray-50 rounded border-l-4 border-blue-300 italic text-gray-700"
+            >
+              "{example}"
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </Card>
+
+  {/* Achievement Enhancement */}
+  <Card className="p-6 border border-gray-200 rounded-xl shadow-sm transition transform duration-300 hover:scale-101 hover:shadow-xl hover:shadow-indigo-500/35">
+    <div className="flex items-center space-x-3 mb-6">
+      <div className="p-2 rounded-lg bg-indigo-100">
+        <Award className="h-5 w-5 text-indigo-600" />
+      </div>
+      <h2 className="text-2xl font-bold text-gray-800">Achievement Enhancement</h2>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Current Achievements */}
+      <div className="p-4 border border-gray-200 rounded-lg bg-white">
+        <h3 className="text-lg font-semibold text-gray-800 mb-3">Current Strong Achievements</h3>
+        <ul className="space-y-3">
+          {alignmentData.achievements.current.map((achievement, index) => (
+            <li key={index} className="flex items-start">
+              <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-green-100 text-green-600 mr-3 mt-0.5">
+                <Star className="h-4 w-4" />
+              </span>
+              <span className="text-gray-700">{achievement}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {/* Suggested Achievements */}
+      <div className="p-4 border border-gray-200 rounded-lg bg-white">
+        <h3 className="text-lg font-semibold text-gray-800 mb-3">Suggested New Achievements</h3>
+        <div className="space-y-3">
+          {alignmentData.achievements.suggested.map((suggestion, index) => (
+            <div key={index} className="p-3 border border-blue-100 rounded-lg bg-blue-50/30">
+              <div className="font-medium text-gray-800 mb-1">Suggestion:</div>
+              <div className="text-gray-600 text-sm mb-2">{suggestion.statement}</div>
+              <div className="font-medium text-gray-800 mb-1">Example:</div>
+              <div className="text-gray-700 text-sm">{suggestion.example}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    {/* Quantification Tips */}
+    <div className="mt-6 p-4 border border-gray-200 rounded-lg bg-white">
+      <h3 className="text-lg font-semibold text-gray-800 mb-3">Quantification Tips</h3>
+      <ul className="space-y-2">
+        {alignmentData.achievements.quantificationTips.map((tip, index) => (
+          <li key={index} className="flex items-start">
+            <span className="inline-flex items-center justify-center h-6 w-6 rounded-full bg-blue-100 text-blue-600 mr-3 mt-0.5">
+              <TrendingUp className="h-4 w-4" />
+            </span>
+            <span className="text-gray-700">{tip}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </Card>
+
+  {/* Action Buttons - Centered with spacing */}
+  <div className="flex flex-col sm:flex-row justify-center gap-4 pt-8">
+   <Button
+  size="lg"
+  onClick={() => navigate(-1)}
+  className="text-white shadow-sm rounded-xl px-6 py-3 
+             bg-gradient-hero
+             hover:scale-105 hover:shadow-lg 
+             transition transform duration-300"
+>
+  <ArrowLeft className="mr-2 h-4 w-4" />
+  Back to Results
+</Button>
+
+<Button
+  size="lg"
+  className="text-white shadow-sm rounded-xl px-6 py-3
+             bg-gradient-hero
+             hover:scale-105 hover:shadow-lg
+             transition transform duration-300"
+>
+  <Download className="mr-2 h-4 w-4" />
+  Download Full Report
+</Button>
+
+
+  </div>
+</div>
     </div>
   );
 };
