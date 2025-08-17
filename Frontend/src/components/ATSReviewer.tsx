@@ -496,7 +496,7 @@ const ATSReviewer = () => {
 
           {/* Analysis Progress */}
           {isAnalyzing && (
-            <Card className="p-8 shadow-card mt-8 animate-scale-in">
+            <Card className="p-8 border-blue-500 shadow-card mt-8 animate-scale-in">
               <div className="text-center">
                 <TrendingUp className="mx-auto h-12 w-12 text-primary mb-4 animate-pulse" />
                 <h3 className="text-2xl font-bold mb-4">Analyzing Your Resume</h3>
@@ -526,7 +526,7 @@ const ATSReviewer = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-muted py-12 mt-16">
+      <footer className="bg-muted py-12 mt-16 border-t-blue-500">
         <div className="container mx-auto px-4">
           <div className="text-center">
             <h3 className="text-lg font-semibold mb-2">CVBoost</h3>

@@ -3,6 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+
+import { ATSImprovementsPdf } from '@/components/ATSImprovementsPdf';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import { 
   ArrowLeft, 
   Shield, 
@@ -63,6 +66,9 @@ const ATSImprovements = () => {
   if (!improvements) {
     return null; // Temporary render while redirecting
   }
+  // Add this inside your ATSImprovements component:
+
+
 
   const handleBackToResults = () => {
     if (results) {
@@ -81,8 +87,9 @@ const ATSImprovements = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      
       {/* Header */}
-      <div className="bg-gradient-hero text-white">
+      <div className="bg-gradient-to-r from-slate-800 via-blue-900 to-black text-white">
         <div className="container mx-auto px-4 py-12">
           <div className="flex items-center justify-between">
             <div className="animate-fade-in">
@@ -102,7 +109,7 @@ const ATSImprovements = () => {
 
      <div className="container mx-auto px-4 py-12 space-y-12">
                 {/* Formatting Issues Section */}
-                <Card className="p-8 border-0 shadow-lg rounded-xl bg-white dark:bg-gray-800">
+                <Card className="p-8 border-blue-500  shadow-lg rounded-xl bg-white dark:bg-gray-800">
                   <div className="flex items-center mb-8">
                     <div className="p-3 rounded-full bg-red-50 dark:bg-red-900/20 mr-4">
                       <LayoutTemplate className="h-6 w-6 text-red-500 dark:text-red-400" />
@@ -111,7 +118,7 @@ const ATSImprovements = () => {
                   </div>
                   <div className="space-y-4">
                     {improvements.formattingIssues.problems.map((problem, i) => (
-                      <div key={i} className="p-5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
+                      <div key={i} className="p-5 rounded-lg bg-gray-100 dark:bg-gray-700 border border-gray-100 dark:border-gray-700">
                         <div className="flex items-center text-red-500 dark:text-red-400 mb-3">
                           <AlertTriangle className="h-5 w-5 mr-2" />
                           <span className="font-semibold">Issue</span>
@@ -128,7 +135,7 @@ const ATSImprovements = () => {
                 </Card>
 
                 {/* Keyword Optimization Section */}
-                <Card className="p-8 border-0 shadow-lg rounded-xl bg-white dark:bg-gray-800">
+                <Card className="p-8 border-blue-500  shadow-lg rounded-xl bg-white dark:bg-gray-800">
                   <div className="flex items-center mb-8">
                     <div className="p-3 rounded-full bg-blue-50 dark:bg-blue-900/20 mr-4">
                       <Search className="h-6 w-6 text-blue-500 dark:text-blue-400" />
@@ -137,7 +144,7 @@ const ATSImprovements = () => {
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {improvements.keywordOptimization.missingKeywords.map((keyword, i) => (
-                      <div key={i} className="p-5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
+                      <div key={i} className="p-5 rounded-lg bg-gray-100 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
                         <div className="flex items-center mb-3">
                           <Zap className="h-5 w-5 text-yellow-500 mr-2" />
                           <span className="font-medium">Add keyword:</span>
@@ -159,7 +166,7 @@ const ATSImprovements = () => {
                 </Card>
 
                 {/* Skill Presentation Section */}
-                <Card className="p-8 border-0 shadow-lg rounded-xl bg-white dark:bg-gray-800">
+                <Card className="p-8 border-blue-500 shadow-lg rounded-xl bg-white dark:bg-gray-800">
                   <div className="flex items-center mb-8">
                     <div className="p-3 rounded-full bg-purple-50 dark:bg-purple-900/20 mr-4">
                       <ListChecks className="h-6 w-6 text-purple-500 dark:text-purple-400" />
@@ -168,7 +175,7 @@ const ATSImprovements = () => {
                   </div>
                   <div className="space-y-4">
                     {improvements.skillPresentation.weakSkills.map((skill, i) => (
-                      <div key={i} className="p-5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
+                      <div key={i} className="p-5 rounded-lg bg-gray-100 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
                         <div className="flex items-center text-red-500 dark:text-red-400 mb-3">
                           <AlertTriangle className="h-5 w-5 mr-2" />
                           <span className="font-semibold">Weak Presentation</span>
@@ -185,7 +192,7 @@ const ATSImprovements = () => {
                 </Card>
 
                 {/* Experience Improvements Section */}
-                <Card className="p-8 border-0 shadow-lg rounded-xl bg-white dark:bg-gray-800">
+                <Card className="p-8 border-blue-500 shadow-lg rounded-xl bg-white dark:bg-gray-800">
                   <div className="flex items-center mb-8">
                     <div className="p-3 rounded-full bg-blue-50 dark:bg-blue-900/20 mr-4">
                       <TrendingUp className="h-6 w-6 text-blue-500 dark:text-blue-400" />
@@ -194,7 +201,7 @@ const ATSImprovements = () => {
                   </div>
                   <div className="space-y-6">
                     {improvements.experienceImprovements.weakBullets.map((bullet, i) => (
-                      <div key={i} className="p-5 rounded-lg bg-gray-50 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
+                      <div key={i} className="p-5 rounded-lg bg-gray-100 dark:bg-gray-700/50 border border-gray-100 dark:border-gray-700">
                         <div className="text-red-500 dark:text-red-400 font-semibold mb-2">Weak Bullet Point:</div>
                         <p className="mb-4 italic text-gray-600 dark:text-gray-400">"{bullet}"</p>
                         <div className="text-green-500 dark:text-green-400 font-semibold mb-1">Improved Version:</div>
@@ -205,7 +212,7 @@ const ATSImprovements = () => {
                 </Card>
 
                 {/* Action Plan Section */}
-                <Card className="p-8 border-0 shadow-lg rounded-xl bg-white dark:bg-gray-800">
+                <Card className="p-8 border-blue-500 shadow-lg rounded-xl bg-white dark:bg-gray-800">
                   <div className="flex items-center mb-8">
                     <div className="p-3 rounded-full bg-indigo-50 dark:bg-indigo-900/20 mr-4">
                       <Calendar className="h-6 w-6 text-indigo-500 dark:text-indigo-400" />
@@ -285,13 +292,20 @@ const ATSImprovements = () => {
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Results
                   </Button>
-                  <Button size="lg" variant="secondary">
-                    <Download className="mr-2 h-4 w-4" />
-                    Download Full Report
-                  </Button>
+                  <PDFDownloadLink 
+  document={<ATSImprovementsPdf improvements={improvements} />}
+  fileName="ATS-Improvements-Report.pdf"
+>
+  {({ loading }) => (
+    <Button size="lg" variant="secondary" disabled={loading}>
+      <Download className="mr-2 h-4 w-4" />
+      {loading ? 'Preparing report...' : 'Download Full Report'}
+    </Button>
+  )}
+</PDFDownloadLink>
                 </div>
-      
-    </div>
+      </div>
+    
   );
 };
 
