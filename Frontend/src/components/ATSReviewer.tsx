@@ -72,7 +72,7 @@ const ATSReviewer = () => {
   setProgress(0);
 
   // Validate job description
-  if (!jobDescription.trim() || jobDescription.trim().split(/\s+/).length < 20) {
+  if (!jobDescription.trim() ) {
     toast({
       variant: "destructive",
       title: "Job Description Too Short",

@@ -128,7 +128,8 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
       
       const improvements = await response.json();
       navigate('/ats-improvements', { 
-      state: { improvements },
+      state: { improvements,results},
+       
       // Add this to prevent navigation loops
     });
       
@@ -225,14 +226,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
                 Your resume has been analyzed against the job requirements
               </p>
             </div>
-            <Button 
-              size="lg"
-              onClick={onDownload}
-              className="bg-white text-primary hover:bg-white/90 shadow-hover"
-            >
-              <Download className="mr-2 h-5 w-5" />
-              Download Report
-            </Button>
+            
           </div>
         </div>
       </div>
@@ -241,7 +235,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
         {/* Score Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {/* ATS Score */}
-          <Card className="p-8 text-center shadow-card bg-gradient-card animate-scale-in">
+          <Card className="p-8 text-center shadow-card bg-gradient-card animate-scale-in transition transform duration-300 hover:scale-101 hover:shadow-xl">
             <TrendingUp className="mx-auto h-12 w-12 text-primary mb-4" />
             <h3 className="text-lg font-semibold mb-2">ATS Score</h3>
             <div className={`text-5xl font-bold mb-4 ${getScoreColor(results.atsScore)}`}>
@@ -253,7 +247,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
           </Card>
 
           {/* Keyword Match */}
-          <Card className="p-8 text-center shadow-card bg-gradient-card animate-scale-in" style={{ animationDelay: '0.1s' }}>
+          <Card className="p-8 text-center shadow-card bg-gradient-card animate-scale-in transition transform duration-300 hover:scale-101 hover:shadow-xl" style={{ animationDelay: '0.1s' }}>
             <Target className="mx-auto h-12 w-12 text-secondary mb-4" />
             <h3 className="text-lg font-semibold mb-2">Keyword Match</h3>
             <div className={`text-5xl font-bold mb-4 ${getScoreColor(results.keywordMatch)}`}>
@@ -263,7 +257,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
           </Card>
 
           {/* Skill Coverage */}
-          <Card className="p-8 text-center shadow-card bg-gradient-card animate-scale-in" style={{ animationDelay: '0.2s' }}>
+          <Card className="p-8 text-center shadow-card bg-gradient-card animate-scale-in transition transform duration-300 hover:scale-101 hover:shadow-xl" style={{ animationDelay: '0.2s' }}>
             <CheckCircle className="mx-auto h-12 w-12 text-success mb-4" />
             <h3 className="text-lg font-semibold mb-2">Skill Coverage</h3>
             <p className="text-muted-foreground text-sm">
@@ -275,7 +269,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
         {/* Charts Section */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Bar Chart */}
-          <Card className="p-8 shadow-card animate-slide-up">
+          <Card className="p-8 shadow-card animate-slide-up transition transform duration-300 hover:scale-101 hover:shadow-xl">
             <div className="flex items-center mb-6">
               <BarChart3 className="h-6 w-6 text-primary mr-3" />
               <h3 className="text-xl font-semibold">Skills Analysis</h3>
@@ -292,7 +286,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
           </Card>
 
           {/* Pie Chart */}
-          <Card className="p-8 shadow-card animate-slide-up" style={{ animationDelay: '0.1s' }}>
+          <Card className="p-8 shadow-card animate-slide-up transition transform duration-300 hover:scale-101 hover:shadow-xl" style={{ animationDelay: '0.1s' }}>
             <div className="flex items-center mb-6">
               <PieChart className="h-6 w-6 text-secondary mr-3" />
               <h3 className="text-xl font-semibold">Skills Distribution</h3>
@@ -331,7 +325,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
         {/* Skills Details */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Present Skills */}
-          <Card className="p-8 shadow-card animate-slide-up" style={{ animationDelay: '0.2s' }}>
+          <Card className="p-8 shadow-card animate-slide-up transition transform duration-300 hover:scale-101 hover:shadow-xl" style={{ animationDelay: '0.2s' }}>
             <div className="flex items-center mb-6">
               <CheckCircle className="h-6 w-6 text-success mr-3" />
               <h3 className="text-xl font-semibold">Skills Found</h3>
@@ -346,7 +340,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
           </Card>
 
           {/* Missing Skills */}
-          <Card className="p-8 shadow-card animate-slide-up" style={{ animationDelay: '0.3s' }}>
+          <Card className="p-8 shadow-card animate-slide-up transition transform duration-300 hover:scale-101 hover:shadow-xl" style={{ animationDelay: '0.3s' }}>
             <div className="flex items-center mb-6">
               <AlertTriangle className="h-6 w-6 text-warning mr-3" />
               <h3 className="text-xl font-semibold">Missing Skills</h3>
@@ -367,7 +361,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* ATS Improvements Button */}
           <Card 
-            className="p-8 shadow-card bg-gradient-card hover:shadow-hover transition-all duration-300 cursor-pointer group"
+            className="p-8 shadow-card bg-gradient-to-r from-cyan-500/20 to-blue-500/30  cursor-pointer group transition transform duration-300 hover:scale-103 hover:shadow-xl"
             onClick={handleShowImprovements }
           >
             <div className="flex items-center justify-between">
@@ -375,7 +369,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
                 <Shield className="h-12 w-12 text-primary group-hover:scale-110 transition-transform" />
                 <div>
                   <h3 className="text-2xl font-bold mb-2">ATS Improvements</h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-bold">
                     Detailed analysis and actionable steps to improve ATS compatibility
                   </p>
                 </div>
@@ -386,7 +380,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
 
           {/* Job Alignment Button */}
           <Card 
-            className="p-8 shadow-card bg-gradient-card hover:shadow-hover transition-all duration-300 cursor-pointer group"
+            className="p-8 shadow-card bg-gradient-to-r from-indigo-500/30 via-purple-500/20 to-pink-500/50  cursor-pointer group transition transform duration-300 hover:scale-103 hover:shadow-xl"
             onClick={handleShowJobAlignment }
           >
             <div className="flex items-center justify-between">
@@ -394,7 +388,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
                 <Target className="h-12 w-12 text-secondary group-hover:scale-110 transition-transform" />
                 <div>
                   <h3 className="text-2xl font-bold mb-2">Job Alignment</h3>
-                  <p className="text-muted-foreground">
+                  <p className="text-bold">
                     Specific suggestions to better match this job opportunity
                   </p>
                 </div>

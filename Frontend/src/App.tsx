@@ -8,7 +8,7 @@ import NotFound from "./pages/NotFound";
 import ATSImprovements from "./pages/ATSImprovements";
 import JobAlignment from "./pages/JobAlignment";
 import { ResultsDashboard } from "./components/ResultsDashboard";
-
+import {ResultsPage} from "./components/ResultsPage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -19,7 +19,7 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
-          
+          <Route path="/results" element={<ResultsPage />} />
           <Route path="/ats-improvements" element={<ATSImprovements />} />
           <Route path="/job-alignment" element={<JobAlignment />} />
           
