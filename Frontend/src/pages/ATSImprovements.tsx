@@ -3,6 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+
+import { ATSImprovementsPdf } from '@/components/ATSImprovementsPdf';
+import { PDFDownloadLink } from '@react-pdf/renderer';
 import { 
   ArrowLeft, 
   Shield, 
@@ -63,6 +66,9 @@ const ATSImprovements = () => {
   if (!improvements) {
     return null; // Temporary render while redirecting
   }
+  // Add this inside your ATSImprovements component:
+
+
 
   const handleBackToResults = () => {
     if (results) {
@@ -81,6 +87,7 @@ const ATSImprovements = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      
       {/* Header */}
       <div className="bg-gradient-to-r from-slate-800 via-blue-900 to-black text-white">
         <div className="container mx-auto px-4 py-12">
@@ -285,13 +292,20 @@ const ATSImprovements = () => {
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     Back to Results
                   </Button>
-                  <Button size="lg" variant="secondary">
-                    <Download className="mr-2 h-4 w-4" />
-                    Download Full Report
-                  </Button>
+                  <PDFDownloadLink 
+  document={<ATSImprovementsPdf improvements={improvements} />}
+  fileName="ATS-Improvements-Report.pdf"
+>
+  {({ loading }) => (
+    <Button size="lg" variant="secondary" disabled={loading}>
+      <Download className="mr-2 h-4 w-4" />
+      {loading ? 'Preparing report...' : 'Download Full Report'}
+    </Button>
+  )}
+</PDFDownloadLink>
                 </div>
-      
-    </div>
+      </div>
+    
   );
 };
 

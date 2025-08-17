@@ -4,6 +4,9 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Progress,  } from '@/components/ui/progress';
+import { JobAlignmentPdf } from '@/components/JobAlignmentPdf'; 
+import { PDFDownloadLink } from '@react-pdf/renderer';
+
 
 import { 
   ArrowLeft, 
@@ -385,16 +388,16 @@ const JobAlignment = () => {
   Back to Results
 </Button>
 
-<Button
-  size="lg"
-  className="text-white shadow-sm rounded-xl px-6 py-3
-             bg-gradient-hero
-             hover:scale-105 hover:shadow-lg
-             transition transform duration-300"
+<PDFDownloadLink
+  document={<JobAlignmentPdf data={alignmentData} />}
+  fileName="Job-Alignment-Report.pdf"
 >
-  <Download className="mr-2 h-4 w-4" />
-  Download Full Report
-</Button>
+  {({ loading }) => (
+    <Button disabled={loading}>
+      {loading ? 'Preparing report...' : 'Download Job Alignment Report'}
+    </Button>
+  )}
+</PDFDownloadLink>
 
 
   </div>

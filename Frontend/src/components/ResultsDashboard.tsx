@@ -5,6 +5,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import { AnalysisResultsPdf } from './AnalysisResultsPdf';
 import { 
   Download, 
   ArrowLeft, 
@@ -354,6 +356,18 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
             </div>
           </Card>
         </div>
+        <div className='flex justify-center mb-3'>
+                  <PDFDownloadLink
+              document={<AnalysisResultsPdf results={results} />}
+              fileName={`ATS-Analysis-Report-${new Date().toISOString().slice(0, 10)}.pdf`}
+            >
+              {({ loading }) => (
+                <Button disabled={loading}>
+                  <Download className="mr-2 h-4 w-4" />
+                  {loading ? 'Generating Report...' : 'Download ATS Report'}
+                </Button>
+              )}
+            </PDFDownloadLink> </div>
 
         
 
