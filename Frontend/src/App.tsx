@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import ATSImprovements from "./pages/ATSImprovements";
 import JobAlignment from "./pages/JobAlignment";
+import { ResultsDashboard } from "./components/ResultsDashboard";
 
 const queryClient = new QueryClient();
 
@@ -18,8 +19,10 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          
           <Route path="/ats-improvements" element={<ATSImprovements />} />
           <Route path="/job-alignment" element={<JobAlignment />} />
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

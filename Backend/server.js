@@ -85,7 +85,10 @@ app.post('/analyze', upload.single('resume'), async (req, res) => {
     // Clean up the uploaded file
     fs.unlinkSync(filePath);
 
-    const jobDescription = req.body.jobDescription;
+    const jobDescription = req.body.jobDescription
+        .replace(/[^\w\s.,-]/g, ' ') // Clean special chars
+        .replace(/\s+/g, ' ')        // Collapse whitespace
+        .trim();
 
     // Craft prompt for AI analysis
     const analysisPrompt = `
