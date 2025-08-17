@@ -124,7 +124,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
       const improvements = await response.json();
       navigate('/ats-improvements', { 
       state: { improvements },
-      replace: true // Add this to prevent navigation loops
+      // Add this to prevent navigation loops
     });
       
     } catch (error) {

@@ -71,6 +71,18 @@ const ATSReviewer = () => {
   setIsAnalyzing(true);
   setProgress(0);
 
+  // Validate job description
+  if (!jobDescription.trim() || jobDescription.trim().split(/\s+/).length < 20) {
+    toast({
+      variant: "destructive",
+      title: "Job Description Too Short",
+      description: "Please paste the complete job description (at least 20 words)",
+    });
+    setIsAnalyzing(false);
+    return;
+  }
+
+
   const steps = [
     { progress: 20, message: "Uploading resume..." },
     { progress: 40, message: "Analyzing keywords..." },
@@ -82,8 +94,13 @@ const ATSReviewer = () => {
   try {
     const formData = new FormData();
     formData.append('resume', file!);
-    formData.append('jobDescription', jobDescription);
-
+    // Clean and normalize job description text
+    const cleanJobDescription = jobDescription
+      .replace(/\s+/g, ' ')          // Replace multiple spaces
+      .replace(/[^\w\s.,-]/g, ' ')   // Keep only common punctuation
+      .trim();
+    
+    formData.append('jobDescription', cleanJobDescription);
     for (const step of steps) {
       await new Promise(resolve => setTimeout(resolve, 800));
       setProgress(step.progress);
@@ -113,7 +130,7 @@ const ATSReviewer = () => {
     setResults({
   ...analysisResults,
   resumeText: analysisResults.resumeText,
-  jobDescriptionText: analysisResults.jobDescriptionText
+   jobDescriptionText: cleanJobDescription // Store cleaned versio
 });
     setIsAnalyzing(false);
 
@@ -412,22 +429,45 @@ const ATSReviewer = () => {
           </Card>
 
           {/* Job Description Input */}
-          <Card className="p-8 shadow-card bg-gradient-card mt-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
-            <div className="text-center mb-6">
-              <BarChart3 className="mx-auto h-12 w-12 text-secondary mb-4" />
-              <h2 className="text-3xl font-bold mb-4">Job Description</h2>
-              <p className="text-muted-foreground">
-                Paste the job description to get tailored keyword matching and optimization suggestions
-              </p>
-            </div>
+            <Card className="p-8 shadow-card bg-gradient-card mt-8 animate-slide-up" style={{ animationDelay: '0.2s' }}>
+              <div className="text-center mb-6">
+                <BarChart3 className="mx-auto h-12 w-12 text-secondary mb-4" />
+                <h2 className="text-3xl font-bold mb-4">Job Description</h2>
+                <p className="text-muted-foreground">
+                  Paste the complete job description (including bullets, formatting, etc.)
+                </p>
+              </div>
 
-            <Textarea
-              placeholder="Paste the complete job description here for better analysis..."
-              value={jobDescription}
-              onChange={(e) => setJobDescription(e.target.value)}
-              className="min-h-48 text-base resize-none"
-            />
-          </Card>
+              <div className="relative">
+                <Textarea
+                  placeholder="Paste job description with all formatting (bullets, numbering, etc.)..."
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                  className="min-h-48 text-base resize-none whitespace-pre-wrap"
+                  onPaste={(e) => {
+                    // Handle rich text paste by converting to plain text
+                    const pastedText = e.clipboardData.getData('text/plain');
+                    e.preventDefault();
+                    setJobDescription(prev => prev + pastedText);
+                  }}
+                />
+                {jobDescription && (
+                  <div className="absolute bottom-2 right-2 text-xs text-muted-foreground">
+                    {jobDescription.length} characters
+                  </div>
+                )}
+              </div>
+              
+              <div className="mt-4 text-sm text-muted-foreground">
+                <p>Tip: Copy-paste directly from job postings including:</p>
+                <ul className="list-disc pl-5 mt-1 space-y-1">
+                  <li>Bullet points</li>
+                  <li>Numbered lists</li>
+                  <li>Special characters</li>
+                  <li>Full formatting</li>
+                </ul>
+              </div>
+            </Card>
 
           {/* Analysis Progress */}
           {isAnalyzing && (
