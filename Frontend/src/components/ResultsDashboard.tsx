@@ -24,7 +24,8 @@ import {
   Shield,
   Lightbulb,
   TrendingDown,
-  ArrowRight
+  ArrowRight,
+  Search
 } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart as RechartsPieChart, Cell, Pie } from 'recharts';
 
@@ -107,13 +108,17 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
         });
         return;
       }
+      const cleanJobDescription = results.jobDescriptionText
+      .replace(/\s+/g, ' ')          // Replace multiple spaces
+      .replace(/[^\w\s.,-]/g, ' ')   // Keep only common punctuation
+      .trim();
 
       const response = await fetch('http://localhost:5000/analyze-improvements', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           resumeText: results.resumeText,
-          jobDescription: results.jobDescriptionText
+          jobDescription: cleanJobDescription
         })
       });
       
@@ -135,6 +140,48 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
       });
     }
   };
+  const handleShowJobAlignment = async () => {
+  try {
+    if (!results.resumeText || !results.jobDescriptionText) {
+      toast({
+        variant: "destructive",
+        title: "Data missing",
+        description: "Resume text or job description not available",
+      });
+      return;
+    }
+    const cleanJobDescription = results.jobDescriptionText
+      .replace(/\s+/g, ' ')          // Replace multiple spaces
+      .replace(/[^\w\s.,-]/g, ' ')   // Keep only common punctuation
+      .trim();
+
+    const response = await fetch('http://localhost:5000/analyze-job-alignment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        resumeText: results.resumeText,
+        jobDescription: cleanJobDescription
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || 'Failed to fetch job alignment analysis');
+    }
+
+    const alignmentData = await response.json();
+    navigate('/job-alignment', {
+      state: { alignmentData }
+    });
+
+  } catch (error) {
+    toast({
+      variant: "destructive",
+      title: "Analysis Failed",
+      description: error instanceof Error ? error.message : "Failed to analyze job alignment",
+    });
+  }
+};
   const getScoreColor = (score: number) => {
     if (score >= 80) return 'text-success';
     if (score >= 60) return 'text-warning';
@@ -340,7 +387,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
           {/* Job Alignment Button */}
           <Card 
             className="p-8 shadow-card bg-gradient-card hover:shadow-hover transition-all duration-300 cursor-pointer group"
-            onClick={handleShowImprovements }
+            onClick={handleShowJobAlignment }
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-4">

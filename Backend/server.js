@@ -302,6 +302,140 @@ app.post('/analyze-improvements', async (req, res) => {
     });
   }
 });
+app.post('/analyze-job-alignment', async (req, res) => {
+  try {
+    // Validate input
+    if (!req.body.resumeText) {
+      return res.status(400).json({ error: 'Resume text is required' });
+    }
+    if (!req.body.jobDescription) {
+      return res.status(400).json({ error: 'Job description is required' });
+    }
+
+    const resumeText = req.body.resumeText;
+    const jobDescription = req.body.jobDescription;
+
+    const alignmentPrompt = `
+    You are an expert career coach and resume strategist. Analyze how well the following resume aligns with the provided job description and provide specific, actionable recommendations to better tailor the resume for this position. Return the analysis in the exact JSON format specified below.
+
+    RESUME TEXT:
+    ${resumeText}
+
+    JOB DESCRIPTION:
+    ${jobDescription}
+
+    ANALYSIS REQUIREMENTS:
+    1. JOB FIT ANALYSIS:
+       - Score (1-10): How well the resume currently matches the job requirements
+       - Key matches: 3-5 strongest existing alignments
+       - Key gaps: 3-5 most significant mismatches
+
+    2. TAILORING RECOMMENDATIONS:
+       - Rewrites: 3-5 specific resume sections to modify with before/after examples
+       - Additions: 2-3 new elements to include (with examples)
+       - Removals: 1-2 elements to remove (with justification)
+
+    3. KEYWORD OPTIMIZATION:
+       - Missing: 5-7 most important missing keywords from job description
+       - Placement: Specific sections where they should be added
+       - Examples: Natural-sounding examples of how to incorporate them
+
+    4. ACHIEVEMENT ALIGNMENT:
+       - Current: 2-3 existing achievements that best match job requirements
+       - Suggested: 2-3 new achievement statements to add (with examples)
+       - Quantification: How to better quantify existing achievements
+
+    5. STRATEGIC POSITIONING:
+       - Summary/Objective: Recommended rewrite to target this specific job
+       - Reordering: Suggested section reorganization for better impact
+       - Emphasis: Which aspects to highlight more prominently
+
+    OUTPUT FORMAT (STRICT JSON ONLY):
+    {
+      "jobFit": {
+        "score": number,
+        "matches": string[],
+        "gaps": string[]
+      },
+      "tailoring": {
+        "rewrites": { section: string, before: string, after: string }[],
+        "additions": { item: string, example: string }[],
+        "removals": { item: string, reason: string }[]
+      },
+      "keywords": {
+        "missing": string[],
+        "placement": { keyword: string, section: string }[],
+        "examples": string[]
+      },
+      "achievements": {
+        "current": string[],
+        "suggested": { statement: string, example: string }[],
+        "quantificationTips": string[]
+      },
+      "positioning": {
+        "summary": string,
+        "reordering": string[],
+        "emphasis": string[]
+      }
+    }
+
+    IMPORTANT: Return ONLY the JSON object with no additional text or markdown formatting.
+    `;
+
+    // Call OpenRouter API
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'HTTP-Referer': process.env.SITE_URL || 'http://localhost:5000',
+        'X-Title': process.env.SITE_NAME || 'ATS Resume Reviewer'
+      },
+       body: JSON.stringify({
+          model: 'openai/gpt-3.5-turbo', // or any other supported model
+          messages: [{ role: 'user', content: alignmentPrompt }],
+          temperature: 0.7,
+          max_tokens: 1500,
+          response_format: { type: "json_object" }
+        })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`API request failed: ${errorData.error?.message || 'Unknown error'}`);
+    }
+
+    const data = await response.json();
+    
+    if (!data.choices || !data.choices[0]?.message?.content) {
+      throw new Error('Unexpected response format from AI service');
+    }
+
+    // Parse and validate response
+    const responseText = data.choices[0].message.content.trim();
+    let results;
+    try {
+      results = JSON.parse(responseText);
+      // Validate required fields
+      if (!results.jobFit || !results.tailoring) {
+        throw new Error('Invalid response structure from AI');
+      }
+    } catch (parseError) {
+      console.error('Failed to parse:', responseText);
+      throw new Error('Failed to parse analysis results');
+    }
+    
+    res.json(results);
+    
+  } catch (error) {
+    console.error('Job alignment analysis error:', error);
+    res.status(500).json({ 
+      error: error.message,
+      details: process.env.NODE_ENV === 'development' ? error.stack : undefined,
+      solution: 'Please check your input and try again'
+    });
+  }
+});
 // Debug route to verify environment variables
 app.get('/check-env', (req, res) => {
   res.json({
