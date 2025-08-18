@@ -6,7 +6,7 @@ const fs = require('fs');
 const path = require('path');
 const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
-import rateLimit from 'express-rate-limit';
+
 
 
 app.use(limiter);
