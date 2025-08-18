@@ -1,4 +1,4 @@
-import React from 'react';
+import React ,{useEffect}from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -58,6 +58,11 @@ interface JobAlignmentData {
 const JobAlignment = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   const alignmentData: JobAlignmentData = location.state?.alignmentData;
 
   if (!alignmentData) {

@@ -51,6 +51,11 @@ interface ImprovementData {
 const ATSImprovements = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   const [isLoading, setIsLoading] = useState(true);
    useEffect(() => {
     if (!location.state?.improvements) {
