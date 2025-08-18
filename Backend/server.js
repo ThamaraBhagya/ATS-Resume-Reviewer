@@ -1,5 +1,6 @@
 require('dotenv').config();
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const multer = require('multer');
 const cors = require('cors');
 const fs = require('fs');
@@ -9,9 +10,10 @@ const mammoth = require('mammoth');
 
 
 
-app.use(limiter);
+
 
 const app = express();
+
 const port = process.env.PORT || 5000;
 let fetch;
 import('node-fetch').then(module => {
