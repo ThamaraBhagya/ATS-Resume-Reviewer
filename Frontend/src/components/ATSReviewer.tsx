@@ -96,8 +96,13 @@ const ATSReviewer = () => {
     formData.append('resume', file!);
     // Clean and normalize job description text
     const cleanJobDescription = jobDescription
-      .replace(/\s+/g, ' ')          // Replace multiple spaces
-      .replace(/[^\w\s.,-]/g, ' ')   // Keep only common punctuation
+       .replace(/\r?\n|\t+/g, ' ')                        // normalize newlines & tabs
+      .replace(/\s+/g, ' ')                              // collapse multiple spaces
+      .replace(/[“”]/g, '"')                             // normalize smart quotes
+      .replace(/[‘’]/g, "'")                             // normalize apostrophes
+      .replace(/[–—]/g, '-')                             // normalize dashes
+      .replace(/[^a-zA-Z0-9\s.,!?'"()\-\:+*\/&%@]/g, ' ') // allow common symbols
+      .replace(/\s+([.,!?'"()\-\:+*\/&%@])/g, '$1')      // remove space before punctuation
       .trim();
     
     formData.append('jobDescription', cleanJobDescription);
@@ -106,7 +111,7 @@ const ATSReviewer = () => {
       setProgress(step.progress);
     }
 
-    const response = await fetch(`${import.meta.env.BACKEND_URL}/analyze`, {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/analyze`, {
       method: 'POST',
       body: formData,
     });
@@ -121,10 +126,15 @@ const ATSReviewer = () => {
       return;
     }
 
+    // if (!response.ok) {
+    //   const errorData = await response.json();
+    //   throw new Error(errorData.error || 'Failed to analyze resume');
+    // }
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Failed to analyze resume');
-    }
+  const error = await response.text();
+  console.error('API Error:', error);
+  throw new Error(error.includes('{') ? JSON.parse(error).error : error);
+}
 
     const analysisResults: AnalysisResults = await response.json();
     setResults({
@@ -467,7 +477,7 @@ const ATSReviewer = () => {
                 <BarChart3 className="mx-auto h-12 w-12 text-secondary mb-4" />
                 <h2 className="text-3xl font-bold mb-4">Job Description</h2>
                 <p className="text-muted-foreground">
-                  Paste the complete job description (including bullets, formatting, etc.)
+                  Paste the complete job description(try clear summary description without much spaces)
                 </p>
               </div>
 
