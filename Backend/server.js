@@ -30,30 +30,19 @@ const allowedOrigins = [
   console.log(`${req.method} ${req.path}`);
   next();
 });
-// Catch invalid routes
-app.use((req, res) => {
-  res.status(404).json({ error: "Route not found" });
+app.use((req, res, next) => {
+  if (req.url.includes('://')) { // Block URLs like "https://"
+    return res.status(400).json({ error: "Invalid route path" });
+  }
+  next();
 });
 // Middleware
 //app.use(cors());
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+// Replace your CORS config with this:
+app.use(cors());
 
 // Handle preflight requests
-app.options('*', cors());
+// app.options('*', cors());
 app.use(express.json());
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
@@ -589,6 +578,10 @@ app.use((err, req, res, next) => {
     message: err.message,
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
+});
+// Catch invalid routes
+app.use((req, res) => {
+  res.status(404).json({ error: "Route not found" });
 });
 
 // Start the server
