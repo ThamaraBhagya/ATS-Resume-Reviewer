@@ -85,7 +85,7 @@ const JobAlignment = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-gradient-hero text-white">
+      <div className="bg-gradient-to-r from-slate-800 via-blue-900 to-black text-white">
         <div className="container mx-auto px-4 py-12">
           <div className="flex items-center justify-between">
             <div className="animate-fade-in">

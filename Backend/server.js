@@ -6,7 +6,10 @@ const fs = require('fs');
 const path = require('path');
 const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
+import rateLimit from 'express-rate-limit';
 
+
+app.use(limiter);
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -17,13 +20,36 @@ import('node-fetch').then(module => {
   console.error('Failed to import node-fetch:', err);
   process.exit(1);
 });
+const allowedOrigins = [
+  'https://cvboost-rho.vercel.app', // Your Vercel URL
+  'http://localhost:3000'          // For local dev
+];
+ app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
 // Middleware
-app.use(cors());
+//app.use(cors());
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE']
+}));
 app.use(express.json());
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
 
+app.use(limiter);
 // File upload configuration
-const upload = multer({ dest: 'uploads/' });
-
+//const upload = multer({ dest: 'uploads/' });
+const upload = multer({
+  storage: multer.memoryStorage(), // Store in memory instead of disk
+  limits: {
+    fileSize: 5 * 1024 * 1024 // 5MB limit
+  }
+});
 // OpenRouter API configuration
 const OPENROUTER_API_KEY = process.env.ATS_API;
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
@@ -53,6 +79,8 @@ async function withRetry(fn, retries = 3, delay = 1000) {
     }
   }
 }
+app.use(express.json({ limit: '5mb' }));
+app.use(express.urlencoded({ extended: true, limit: '5mb' }));
 
 // Route for analyzing resume
 app.post('/analyze', upload.single('resume'), async (req, res) => {
@@ -65,30 +93,65 @@ app.post('/analyze', upload.single('resume'), async (req, res) => {
       return res.status(400).json({ error: 'Job description is required' });
     }
 
-    const filePath = path.join(__dirname, req.file.path);
+    
     const fileType = req.file.mimetype;
+    const fileBuffer = req.file.buffer;
     let resumeText = '';
 
     // Extract text based on file type
-    if (fileType === 'application/pdf') {
-      resumeText = await extractTextFromPDF(filePath);
-    } else if (
-      fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-      fileType === 'application/msword'
-    ) {
-      resumeText = await extractTextFromDOCX(filePath);
-    } else {
-      fs.unlinkSync(filePath);
-      return res.status(400).json({ error: 'Unsupported file type. Only PDF and DOCX are allowed.' });
+    // if (fileType === 'application/pdf') {
+    //   resumeText = await extractTextFromPDF(filePath);
+    // } else if (
+    //   fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+    //   fileType === 'application/msword'
+    // ) {
+    //   resumeText = await extractTextFromDOCX(filePath);
+    // } else {
+    //   fs.unlinkSync(filePath);
+    //   return res.status(400).json({ error: 'Unsupported file type. Only PDF and DOCX are allowed.' });
+    // }
+    try {
+      if (fileType === 'application/pdf') {
+        const data = await pdfParse(fileBuffer);
+        resumeText = data.text;
+      } else if (
+        fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+        fileType === 'application/msword'
+      ) {
+        const result = await mammoth.extractRawText({ buffer: fileBuffer });
+        resumeText = result.value;
+      } else {
+        return res.status(400).json({ 
+          error: 'Unsupported file type',
+          supportedTypes: ['PDF', 'DOCX']
+        });
+      }
+    } catch (parseError) {
+      console.error('File parsing error:', parseError);
+      return res.status(422).json({ 
+        error: 'Failed to parse resume',
+        details: 'The file may be corrupted or password protected'
+      });
+    }
+    if (!resumeText || resumeText.trim().length < 50) {
+      return res.status(422).json({ 
+        error: 'Invalid resume content',
+        details: 'The document appears to be empty or unreadable'
+      });
     }
 
     // Clean up the uploaded file
-    fs.unlinkSync(filePath);
+    // fs.unlinkSync(filePath);
 
     const jobDescription = req.body.jobDescription
-        .replace(/[^\w\s.,-]/g, ' ') // Clean special chars
-        .replace(/\s+/g, ' ')        // Collapse whitespace
-        .trim();
+        .replace(/\r?\n|\t+/g, ' ')                        // normalize newlines & tabs
+          .replace(/\s+/g, ' ')                              // collapse multiple spaces
+          .replace(/[“”]/g, '"')                             // normalize smart quotes
+          .replace(/[‘’]/g, "'")                             // normalize apostrophes
+          .replace(/[–—]/g, '-')                             // normalize dashes
+          .replace(/[^a-zA-Z0-9\s.,!?'"()\-\:+*\/&%@]/g, ' ') // allow common symbols
+          .replace(/\s+([.,!?'"()\-\:+*\/&%@])/g, '$1')      // remove space before punctuation
+          .trim();
 
     // Craft prompt for AI analysis
     const analysisPrompt = `
@@ -158,35 +221,90 @@ app.post('/analyze', upload.single('resume'), async (req, res) => {
 
 
     const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.error?.message || 'Failed to analyze resume');
+    // Validate response structure
+    if (!data?.choices?.[0]?.message?.content) {
+      throw new Error('Invalid response format from AI service');
     }
 
-    if (!data.choices || !data.choices[0]?.message?.content) {
-      throw new Error('Unexpected response format from AI service');
-    }
-
-    const responseText = data.choices[0].message.content.trim();
-
-    // Parse the JSON response
+    // Parse and validate JSON
     let results;
     try {
-      results = JSON.parse(responseText);
+      results = JSON.parse(data.choices[0].message.content);
+      
+      if (!results.atsScore || !results.skills) {
+        throw new Error('Incomplete analysis results');
+      }
+      
+      // Add cleaned texts to response
+      results.resumeText = resumeText;
+      results.jobDescriptionText = jobDescription;
+
     } catch (parseError) {
-      console.error('Error parsing AI response:', parseError);
-      return res.status(500).json({ error: 'Failed to parse analysis results' });
+      console.error('AI Response:', data.choices[0].message.content);
+      throw new Error('Failed to parse analysis results');
     }
 
-    // Return the results
-    res.json(results);
+    // Return successful response
+    res.json({
+      success: true,
+      ...results
+    });
+
   } catch (error) {
-    console.error('Error during analysis:', error);
-    if (error.message.includes('rate limit') || error.message.includes('quota')) {
-      return res.status(429).json({ error: 'API quota exceeded. Please try again later.' });
+    console.error('Analysis error:', error);
+    
+    // Special handling for timeout
+    if (error.name === 'AbortError') {
+      return res.status(504).json({ 
+        error: 'Analysis timeout',
+        solution: 'Please try again with a smaller file'
+      });
     }
-    res.status(500).json({ error: error.message || 'Internal server error' });
+    
+    // Rate limit handling
+    if (error.message.includes('rate limit') || error.message.includes('quota')) {
+      return res.status(429).json({ 
+        error: 'API quota exceeded',
+        solution: 'Please try again later or upgrade your plan'
+      });
+    }
+    
+    // General error response
+    res.status(500).json({
+      error: 'Analysis failed',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined,
+      solution: 'Please check your input and try again'
+    });
   }
+
+  //   if (!response.ok) {
+  //     throw new Error(data.error?.message || 'Failed to analyze resume');
+  //   }
+
+  //   if (!data.choices || !data.choices[0]?.message?.content) {
+  //     throw new Error('Unexpected response format from AI service');
+  //   }
+
+  //   const responseText = data.choices[0].message.content.trim();
+
+  //   // Parse the JSON response
+  //   let results;
+  //   try {
+  //     results = JSON.parse(responseText);
+  //   } catch (parseError) {
+  //     console.error('Error parsing AI response:', parseError);
+  //     return res.status(500).json({ error: 'Failed to parse analysis results' });
+  //   }
+
+  //   // Return the results
+  //   res.json(results);
+  // } catch (error) {
+  //   console.error('Error during analysis:', error);
+  //   if (error.message.includes('rate limit') || error.message.includes('quota')) {
+  //     return res.status(429).json({ error: 'API quota exceeded. Please try again later.' });
+  //   }
+  //   res.status(500).json({ error: error.message || 'Internal server error' });
+  // }
 });
 
 app.post('/analyze-improvements', async (req, res) => {
@@ -442,6 +560,15 @@ app.get('/check-env', (req, res) => {
     OPENROUTER_API_KEY: !!process.env.ATS_API,
     SITE_URL: process.env.SITE_URL,
     SITE_NAME: process.env.SITE_NAME,
+  });
+});
+// Add this after all routes
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).json({
+    error: 'Internal Server Error',
+    message: err.message,
+    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 });
 
