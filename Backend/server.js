@@ -30,6 +30,10 @@ const allowedOrigins = [
   console.log(`${req.method} ${req.path}`);
   next();
 });
+// Catch invalid routes
+app.use((req, res) => {
+  res.status(404).json({ error: "Route not found" });
+});
 // Middleware
 //app.use(cors());
 app.use(cors({
