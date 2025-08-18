@@ -106,7 +106,7 @@ const ATSReviewer = () => {
       setProgress(step.progress);
     }
 
-    const response = await fetch('http://localhost:5000/analyze', {
+    const response = await fetch(`${import.meta.env.BACKEND_URL}/analyze`, {
       method: 'POST',
       body: formData,
     });

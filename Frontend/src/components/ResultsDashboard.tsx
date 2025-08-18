@@ -120,7 +120,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
       .replace(/[^\w\s.,-]/g, ' ')   // Keep only common punctuation
       .trim();
 
-      const response = await fetch('http://localhost:5000/analyze-improvements', {
+      const response = await fetch(`${import.meta.env.BACKEND_URL}/analyze-improvements`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -163,7 +163,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
       .replace(/[^\w\s.,-]/g, ' ')   // Keep only common punctuation
       .trim();
 
-    const response = await fetch('http://localhost:5000/analyze-job-alignment', {
+    const response = await fetch(`${import.meta.env.BACKEND_URL}/analyze-job-alignment`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
