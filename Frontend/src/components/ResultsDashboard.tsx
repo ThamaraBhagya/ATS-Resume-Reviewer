@@ -1,5 +1,5 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React ,{useEffect} from 'react';
+import { useNavigate , useLocation } from 'react-router-dom';
 import { Card } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
@@ -98,6 +98,11 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
 }) => {
   const navigate = useNavigate();
    const { toast } = useToast(); 
+   const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
   // Add these state variables
   // 3. Fixed handleShowImprovements function
   const handleShowImprovements = async () => {
