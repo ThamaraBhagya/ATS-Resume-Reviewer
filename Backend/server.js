@@ -23,10 +23,7 @@ import('node-fetch').then(module => {
   console.error('Failed to import node-fetch:', err);
   process.exit(1);
 });
-const allowedOrigins = [
-  'https://cvboost-rho.vercel.app', // Your Vercel URL
-  'http://localhost:3000'          // For local dev
-];
+
  app.use((req, res, next) => {
   console.log(`${req.method} ${req.path}`);
   next();
@@ -38,8 +35,14 @@ app.use((req, res, next) => {
   next();
 });
 // Middleware
-app.use(cors());
+// Enable CORS only for your frontend
+app.use(cors({
+  origin: "https://cvboost-rho.vercel.app",
+  credentials: true
+}));
 
+// Optional: ignore favicon requests
+app.get("/favicon.ico", (req, res) => res.status(204).end());
 
 // Handle preflight requests
 
