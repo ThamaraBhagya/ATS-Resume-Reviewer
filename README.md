@@ -38,7 +38,7 @@ ATS Resume Receiver is a web application designed to help users upload their res
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/ats-resume-receiver.git
+git clone https://github.com/ThamaraBhagya/ats-resume-receiver.git
 cd ats-resume-receiver
 ```
 
@@ -66,7 +66,7 @@ cd ats-resume-receiver
 
 4. Start the backend server:
    ```bash
-   npm run dev
+   node server.js
    # or
    yarn dev
    ```
@@ -146,15 +146,11 @@ ats-resume-receiver/
 
 ---
 
-## License
 
-This project is licensed under the [MIT License](LICENSE).
-
----
 
 ## Contact
 
-For questions, suggestions, or support, please open an issue or email [your-email@example.com](mailto:your-email@example.com).
+For questions, suggestions, or support, please open an issue or email [your-email@example.com](mailto:thamarabhagya755@example.com).
 
 ---
 
