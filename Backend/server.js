@@ -223,7 +223,7 @@ app.post('/analyze', upload.single('resume'), async (req, res) => {
           model: 'openai/gpt-3.5-turbo', // or any other supported model
           messages: [{ role: 'user', content: analysisPrompt }],
           temperature: 0.7,
-          max_tokens: 1500,
+          max_tokens: 1300,
           response_format: { type: "json_object" }
         })
       })
