@@ -1,157 +1,147 @@
-# ATS Resume Receiver
+# CVBoost - ATS Resume Analyzer
 
-ATS Resume Receiver is a web application designed to help users upload their resumes and instantly match them against a provided job description. It leverages OpenAI-powered analysis to generate ATS (Applicant Tracking System) scores, keyword matches, alignment suggestions, and actionable feedback to improve both resumes and job fit. The platform features a modern frontend built with Vite, Tailwind CSS, and TypeScript, and a robust backend using Express.js.
+A full-stack web application that analyzes resumes against job descriptions using AI-powered insights. Get ATS compatibility scores, keyword matching, skill gap analysis, and actionable improvement recommendations.
 
 ---
 
 ## Features
 
-- **Resume Upload:** Easily upload resumes in PDF or DOCX formats.
-- **Job Description Input:** Paste or upload the target job description for tailored analysis.
-- **OpenAI-Powered Analysis:** Advanced resume parsing and comparison with job descriptions.
-- **ATS Score:** Get a score indicating how well your resume passes automated tracking systems.
-- **Keyword Matches:** See which keywords from the job description are present or missing in your resume.
-- **ATS Improvement Suggestions:** Get a checklist of ways to improve your resume for ATS compatibility.
-- **Job Alignment Details:** Insights on how well your experience and skills align with the role.
-- **Downloadable Reports:** Export detailed analysis reports for offline review or sharing.
-- **Modern UI:** Fast and responsive interface with Vite + Tailwind CSS + TypeScript.
-- **Backend API:** Node.js Express REST API for secure file handling and AI analysis.
+- **Resume Upload** – PDF and DOCX file support
+- **Job Description Analysis** – AI-powered resume matching
+- **ATS Compatibility Score** – 0-100 scoring based on ATS compatibility
+- **Keyword Analysis** – Matching, missing, and critical keywords
+- **Skill Gap Detection** – Present vs. missing skills comparison
+- **Job Alignment Recommendations** – Tailoring suggestions
+- **PDF Report Export** – Download analysis reports
+- **Real-time Progress Tracking** – Multi-stage analysis feedback
 
 ---
 
-## Screenshots
+## Tech Stack
 
-<!-- Optionally include screenshots here -->
+### Frontend
+- **Vite** – Build tool and dev server
+- **React 18** – UI library
+- **TypeScript** – Type safety
+- **Tailwind CSS** – Styling
+- **React Router v6** – Routing
+- **Shadcn/UI** – Component library
+- **React Hook Form** – Form management
+- **Recharts** – Data visualization
+- **jsPDF & html2canvas** – PDF generation
+
+### Backend
+- **Node.js & Express 5.1** – Server framework
+- **Groq API** –llama-3.3-70b  LLM integration for resume analysis
+
 
 ---
 
 ## Getting Started
 
 ### Prerequisites
+- Node.js v16+
+- npm or yarn
+- Groq API Key ([Get it here](https://console.groq.com))
 
-- [Node.js](https://nodejs.org/) (v16+ recommended)
-- [npm](https://www.npmjs.com/) or [yarn](https://yarnpkg.com/)
-- [OpenAI API Key](https://platform.openai.com/signup) (for resume/job analysis)
+### Installation
 
----
-
-### Clone the Repository
-
-```bash
-git clone https://github.com/ThamaraBhagya/ats-resume-receiver.git
-cd ats-resume-receiver
-```
-
----
-
-### Setup Backend
-
-1. Move into the backend directory:
+1. **Clone & Navigate**
    ```bash
-   cd backend
+   git clone <repo-url>
+   cd cvboost
    ```
 
-2. Install dependencies:
+2. **Backend Setup**
    ```bash
+   cd Backend
    npm install
-   # or
-   yarn install
    ```
-
-3. Create a `.env` file based on the provided `.env.example`:
+   Create `.env`:
    ```env
-   OPENAI_API_KEY=your-openai-api-key-here
    PORT=5000
+   GROQ_API_KEY=your-groq-api-key
+   NODE_ENV=development
    ```
-
-4. Start the backend server:
+   Start:
    ```bash
    node server.js
-   # or
-   yarn dev
    ```
 
-   The backend will run at [http://localhost:5000](http://localhost:5000).
-
----
-
-### Setup Frontend
-
-1. Move into the frontend directory:
+3. **Frontend Setup**
    ```bash
-   cd ../frontend
-   ```
-
-2. Install dependencies:
-   ```bash
+   cd ../Frontend
    npm install
-   # or
-   yarn install
    ```
-
-3. Configure the frontend to point to your backend API if needed (see `.env.example`).
-
-4. Start the frontend development server:
+   Create `.env`:
+   ```env
+   VITE_BACKEND_URL=http://localhost:5000
+   ```
+   Start:
    ```bash
    npm run dev
-   # or
-   yarn dev
    ```
-
-   The frontend will run at [http://localhost:5173](http://localhost:5173) by default.
 
 ---
 
-## Usage
+## API Endpoints
 
-1. **Open the App:** Go to the frontend URL.
-2. **Upload Resume:** Click ‘Upload Resume’ and select your file.
-3. **Add Job Description:** Paste or upload the job description.
-4. **Analyze:** Click ‘Analyze’ to let the system process your resume.
-5. **View Results:** See your ATS score, keyword matches, improvement suggestions, and job alignment details.
-6. **Download Report:** Export the analysis as a PDF for your records.
+### POST /analyze
+Analyzes resume against job description
+- **Input:** Resume file (PDF/DOCX) + job description text
+- **Output:** ATS score, keyword match %, skills analysis, recommendations
+
+### POST /analyze-improvements
+Provides detailed improvement suggestions
+- **Input:** Resume text + job description
+- **Output:** Formatting issues, keyword optimization, action plan
+
+### POST /analyze-job-alignment
+Job-specific tailoring recommendations
+- **Input:** Resume text + job description
+- **Output:** Fit score, tailoring suggestions, keyword placement
+
+---
+
+## Technical Highlights
+
+-  Multi-format document parsing (PDF & DOCX)
+-  Advanced text normalization and cleaning
+-  Groq LLM integration for intelligent analysis
+-  Structured JSON responses with validation
+-  Rate limiting and security middleware
+-  Client-side PDF report generation
+-  Responsive design with Tailwind CSS
+-  Full TypeScript coverage
+-  Error handling and retry logic
+-  Memory-efficient file processing
 
 ---
 
 ## Project Structure
 
 ```
-ats-resume-receiver/
-├── backend/           # Express server, OpenAI integration
+cvboost/
+├── Backend/
+│   ├── server.js              # Express server & API routes
+│   ├── package.json
+│   └── .env                   # Local environment config
+│
+├── Frontend/
 │   ├── src/
-│   └── ...
-├── frontend/          # Vite + React + Tailwind CSS + TypeScript
-│   ├── src/
-│   └── ...
+│   │   ├── components/        # React components
+│   │   ├── pages/             # Route pages
+│   │   ├── hooks/             # Custom hooks
+│   │   └── App.tsx
+│   ├── vite.config.ts
+│   ├── tailwind.config.ts
+│   └── package.json
+│
 └── README.md
 ```
 
 ---
 
-## Customization
+## License
 
-- **OpenAI Model:** The backend uses OpenAI’s API for text analysis. You can configure the model or prompt logic in the backend code.
-- **Styling:** The UI is styled with Tailwind CSS—customize via the `tailwind.config.js`.
-- **Report Format:** You can adjust the downloadable report layout in the frontend source.
-
----
-
-## Contributing
-
-1. Fork the repository.
-2. Create your feature branch (`git checkout -b feature/YourFeature`).
-3. Commit your changes (`git commit -am 'Add some feature'`).
-4. Push to the branch (`git push origin feature/YourFeature`).
-5. Open a Pull Request.
-
----
-
-
-
-## Contact
-
-For questions, suggestions, or support, please open an issue or email [your-email@example.com](mailto:thamarabhagya755@example.com).
-
----
-
-**ATS Resume Receiver** – Score, match, and align your resume with your dream job!
+MIT License
