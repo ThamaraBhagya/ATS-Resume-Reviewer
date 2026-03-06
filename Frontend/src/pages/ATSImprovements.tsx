@@ -71,7 +71,7 @@ const ATSImprovements = () => {
   if (!improvements) {
     return null; // Temporary render while redirecting
   }
-  // Add this inside your ATSImprovements component:
+  
 
 
 
@@ -87,7 +87,7 @@ const ATSImprovements = () => {
   };
 
   if (isLoading) {
-    return null; // Or a loading spinner
+    return null; 
   }
 
   return (

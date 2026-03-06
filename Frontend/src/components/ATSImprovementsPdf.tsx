@@ -119,7 +119,7 @@ export const ATSImprovementsPdf = ({ improvements }: { improvements: Improvement
         </View>
       ))}
 
-      {/* Add other sections similarly */}
+      
       {/* Skill Presentation Section */}
       <Text style={styles.sectionTitle}>Skill Presentation Improvements</Text>
       {improvements.skillPresentation.weakSkills.map((skill, i) => (

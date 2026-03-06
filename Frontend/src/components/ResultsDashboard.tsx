@@ -103,8 +103,7 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
-  // Add these state variables
-  // 3. Fixed handleShowImprovements function
+  
   const handleShowImprovements = async () => {
     try {
       if (!results.resumeText || !results.jobDescriptionText) {
@@ -116,8 +115,8 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
         return;
       }
       const cleanJobDescription = results.jobDescriptionText
-      .replace(/\s+/g, ' ')          // Replace multiple spaces
-      .replace(/[^\w\s.,-]/g, ' ')   // Keep only common punctuation
+      .replace(/\s+/g, ' ')          
+      .replace(/[^\w\s.,-]/g, ' ')   
       .trim();
 
       const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/analyze-improvements`, {
@@ -159,8 +158,8 @@ export const ResultsDashboard: React.FC<ResultsDashboardProps> = ({
       return;
     }
     const cleanJobDescription = results.jobDescriptionText
-      .replace(/\s+/g, ' ')          // Replace multiple spaces
-      .replace(/[^\w\s.,-]/g, ' ')   // Keep only common punctuation
+      .replace(/\s+/g, ' ')         
+      .replace(/[^\w\s.,-]/g, ' ')   
       .trim();
 
     const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/analyze-job-alignment`, {

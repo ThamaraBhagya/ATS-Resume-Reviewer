@@ -23,7 +23,7 @@ const App = () => (
           <Route path="/ats-improvements" element={<ATSImprovements />} />
           <Route path="/job-alignment" element={<JobAlignment />} />
           
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
